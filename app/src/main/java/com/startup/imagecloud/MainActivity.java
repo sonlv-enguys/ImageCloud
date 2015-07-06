@@ -38,7 +38,7 @@ import com.telpoo.frame.ui.BetaBaseFmActivity;
 
 import static android.view.Gravity.START;
 
-public class DrawerArrowSample extends FragmentActivity {
+public class MainActivity extends FragmentActivity {
 
     private DrawerArrowDrawable drawerArrowDrawable;
     DrawerLayout drawer;
