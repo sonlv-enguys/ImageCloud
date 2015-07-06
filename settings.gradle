@@ -1,0 +1,5 @@
+include ':app'
+include ':telpooLitle'
+project(':telpooLitle').projectDir= new File('D:\\SonLv\\Android\\Telpoo-framework\\telpooLitle')
+include ':telpooFull'
+project(':telpooFull').projectDir= new File('D:\\SonLv\\Android\\Telpoo-framework\\telpoofull')

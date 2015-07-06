@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/activity_vertical_margin"
+    android:layout_marginRight="@dimen/activity_vertical_margin"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/border_bg"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/login_item_margin"
+            android:background="@drawable/border_white"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/edit_username"
+                style="@style/login_edittext"
+                android:background="@android:color/transparent"
+                android:hint="Tên Đăng Nhập" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/boder_width"
+                android:background="@color/gray" />
+
+            <EditText
+                android:id="@+id/edit_pass"
+                style="@style/login_edittext"
+                android:background="@android:color/transparent"
+                android:hint="Mật Khẩu"
+                android:password="true" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="130dp"
+            android:layout_height="@dimen/text_height"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/login_item_margin"
+            android:background="@drawable/border_white"
+            android:text="Đăng nhập"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

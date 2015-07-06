@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">Image Cloud</string>
+    <string name="content_hint">Content</string>
+    <string name="home">Home</string>
+    <string name="capture">Chụp Ảnh</string>
+    <string name="login_true">Đăng nhập thành công!</string>
+    <string name="login_false">Lỗi đăng nhập, kiểm tra lại thông tin đăng nhập!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
