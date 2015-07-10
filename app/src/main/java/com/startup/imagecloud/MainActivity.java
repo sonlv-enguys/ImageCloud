@@ -42,6 +42,7 @@ import com.androidquery.callback.AjaxStatus;
 import com.androidquery.util.XmlDom;
 import com.startup.imagecloud.fragment.CaptureFragment;
 import com.startup.imagecloud.fragment.HomeFragment;
+import com.startup.imagecloud.fragment.LibraryFragment;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class MainActivity extends FragmentActivity {
     DrawerLayout drawer;
     private float offset;
     private boolean flipped;
-    TextView txtCapture, txtHome, txtLogout;
+    TextView txtCapture, txtHome, txtLogout, txtLibrary;
     ImageView imgMenu;
     AQuery aQuery;
     Dialog dialog = null;
@@ -72,6 +73,7 @@ public class MainActivity extends FragmentActivity {
         txtCapture = (TextView) findViewById(R.id.txt_capture);
         txtHome = (TextView) findViewById(R.id.txt_home);
         txtLogout = (TextView) findViewById(R.id.txt_logout);
+        txtLibrary = (TextView) findViewById(R.id.txt_library);
         final Resources resources = getResources();
 
         drawerArrowDrawable = new DrawerArrowDrawable(resources);
@@ -110,6 +112,12 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 updateView(new HomeFragment());
+            }
+        });
+        txtLibrary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateView(new LibraryFragment());
             }
         });
         txtCapture.setOnClickListener(new View.OnClickListener() {

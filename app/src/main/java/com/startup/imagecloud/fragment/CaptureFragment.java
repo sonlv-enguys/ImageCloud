@@ -26,10 +26,11 @@ import com.androidquery.callback.AjaxStatus;
 import com.androidquery.util.XmlDom;
 import com.loopj.android.http.RequestParams;
 import com.startup.imagecloud.Base64;
-import com.startup.imagecloud.Config;
 import com.startup.imagecloud.MyUrl;
 import com.startup.imagecloud.ProgressBarHandler;
 import com.startup.imagecloud.R;
+import com.startup.imagecloud.db.DbSupport;
+import com.startup.imagecloud.db.ImageObj;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,6 +47,7 @@ public class CaptureFragment extends Fragment {
     Bitmap bitmap = null;
     String idImage = "";
     ProgressBarHandler progressBarHandler;
+    String IMAGE_DIRECTORY_NAME = "com.startup.imagecloud";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,7 @@ public class CaptureFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_caprute, container, false);
         // Inflate the layout for this fragment
-        progressBarHandler=new ProgressBarHandler(getActivity());
+        progressBarHandler = new ProgressBarHandler(getActivity());
         captureImage();
         return view;
     }
@@ -82,13 +84,13 @@ public class CaptureFragment extends Fragment {
         File mediaStorageDir = new File(
                 Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                Config.IMAGE_DIRECTORY_NAME);
+                IMAGE_DIRECTORY_NAME);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 Log.d(TAG, "Oops! Failed create "
-                        + Config.IMAGE_DIRECTORY_NAME + " directory");
+                        + IMAGE_DIRECTORY_NAME + " directory");
                 return null;
             }
         }
@@ -144,6 +146,11 @@ public class CaptureFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
+                ImageObj imageObj = new ImageObj();
+                imageObj.set(ImageObj.ID, idImage);
+                imageObj.set(ImageObj.PATH, fileUri.getPath());
+                imageObj.set(ImageObj.UPLOADED, false);
+                DbSupport.updateImage(imageObj);
             }
         });
         dialog.show();
@@ -155,7 +162,7 @@ public class CaptureFragment extends Fragment {
         ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
         byte[] byteImg = stream1.toByteArray();
-        String encodedImage  =Base64.encodeBytes(byteImg);
+        String encodedImage = Base64.encodeBytes(byteImg);
         Log.d(TAG, encodedImage);
 
         Map<String, Object> params = new HashMap<>();
@@ -181,4 +188,5 @@ public class CaptureFragment extends Fragment {
             }
         });
     }
+
 }
