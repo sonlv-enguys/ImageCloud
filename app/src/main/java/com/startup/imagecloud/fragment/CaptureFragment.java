@@ -164,17 +164,19 @@ public class CaptureFragment extends Fragment {
         params.put("imageCode", encodedImage);
         params.put("key", idImage);
         AQuery aq = new AQuery(getActivity());
-        aq.ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
+        aq.id(R.id.image_preview).image(bitmap);
+        aq.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
 
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
 
                 if (status.getCode() == 200 && data.text().equals("1")) {
                     Toast.makeText(getActivity(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(getActivity(), getString(R.string.upload_false), Toast.LENGTH_SHORT).show();
                 }
+                Log.d(TAG, "" + data);
+                Log.d(TAG, "" + status.getMessage());
                 progressBarHandler.hide();
             }
         });

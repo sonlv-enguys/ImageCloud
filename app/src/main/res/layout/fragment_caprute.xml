@@ -1,11 +1,30 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/txt_preview"
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:spb_mirror_mode="false"
+        app:spb_progressiveStart_activated="true"
+        app:spb_progressiveStart_speed="1.5"
+        app:spb_progressiveStop_speed="3.4"
+        app:spb_reversed="false"
+        app:spb_sections_count="4"
+        app:spb_speed="2.0"
+        app:spb_stroke_separator_length="4dp"
+        app:spb_stroke_width="4dp" />
+
+    <ImageView
+        android:id="@+id/image_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/capture" />
+        android:layout_margin="@dimen/login_item_margin"
+        android:scaleType="fitXY"/>
 
-</FrameLayout>
+</LinearLayout>
