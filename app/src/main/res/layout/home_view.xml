@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_dimen"
-        android:background="@color/dark_gray">
+        android:background="@color/bg">
 
         <ImageView
             android:id="@+id/drawer_indicator"
@@ -28,8 +28,9 @@
             android:gravity="center"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
+            android:textSize="@dimen/menu_text_size"
             android:text="Image Cloud"
-            android:textColor="@color/light_gray"
+            android:textColor="@color/white"
             android:textStyle="bold" />
 
     </FrameLayout>
@@ -49,39 +50,122 @@
 
         <LinearLayout
             android:id="@+id/layout_menu"
-            android:layout_width="240dp"
+            android:layout_width="@dimen/menu_width"
             android:layout_height="match_parent"
+            android:background="@color/bg"
             android:layout_gravity="start"
-            android:background="@color/darker_gray"
             android:orientation="vertical"
             android:paddingLeft="@dimen/menu_margin_left"
             android:paddingTop="@dimen/menu_margin_top">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_height">
+                android:layout_height="@dimen/menu_item_height">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/menu_layout_icon_size"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/menu_icon_size"
+                        android:layout_height="@dimen/menu_icon_size"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_home_white" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/txt_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/home"
-                    android:textColor="@color/light_gray" />
+                    style="@style/menu_text"
+                    android:text="@string/home" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_height">
+                android:layout_height="@dimen/menu_item_height">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/menu_layout_icon_size"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/menu_icon_size"
+                        android:layout_height="@dimen/menu_icon_size"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_photo_camera_white" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/txt_capture"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/capture"
-                    android:textColor="@color/light_gray" />
+                    style="@style/menu_text"
+                    android:text="@string/capture" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/menu_item_height">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/menu_layout_icon_size"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/menu_icon_size"
+                        android:layout_height="@dimen/menu_icon_size"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_sync_white" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txt_sync"
+                    style="@style/menu_text"
+                    android:text="@string/sync" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/menu_item_height">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/menu_layout_icon_size"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/menu_icon_size"
+                        android:layout_height="@dimen/menu_icon_size"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_photo_library_white" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txt_library"
+                    style="@style/menu_text"
+                    android:text="@string/library" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/menu_item_height">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/menu_layout_icon_size"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="@dimen/menu_icon_size"
+                        android:layout_height="@dimen/menu_icon_size"
+                        android:layout_centerVertical="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_logout_white" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txt_logout"
+                    style="@style/menu_text"
+                    android:text="@string/logout" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </android.support.v4.widget.DrawerLayout>

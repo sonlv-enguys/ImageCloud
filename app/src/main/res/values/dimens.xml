@@ -2,9 +2,6 @@
 
 <resources>
   <dimen name="actionbar_dimen">56dp</dimen>
-  <dimen name="menu_margin_top">30dp</dimen>
-  <dimen name="menu_margin_left">30dp</dimen>
-  <dimen name="menu_height">30dp</dimen>
   //login
   <dimen name="text_height">40dp</dimen>
   <dimen name="login_item_margin">10dp</dimen>
@@ -13,4 +10,13 @@
   //boder
   <dimen name="boder_radius">5dp</dimen>
   <dimen name="boder_width">0.5dp</dimen>
+
+  //menu
+  <dimen name="menu_text_size">23dp</dimen>
+  <dimen name="menu_icon_size">40dp</dimen>
+  <dimen name="menu_layout_icon_size">50dp</dimen>
+  <dimen name="menu_margin_top">30dp</dimen>
+  <dimen name="menu_margin_left">30dp</dimen>
+  <dimen name="menu_item_height">70dp</dimen>
+  <dimen name="menu_width">240dp</dimen>
 </resources>

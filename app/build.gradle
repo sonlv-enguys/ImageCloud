@@ -24,4 +24,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile project(':telpooFull')
     compile 'com.android.support:support-v4:22.+'
+    compile files('libs/ripper.jar')
+    compile files('libs/android-async-http-1.4.6.jar')
+    compile files('libs/android_query_0.26.7.jar')
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Active -->
+  <item android:drawable="@drawable/ic_photo_library" android:state_focused="false" android:state_pressed="false" android:state_selected="true" />
+  <!-- Inactive -->
+  <item android:drawable="@drawable/ic_photo_library_white" android:state_focused="false" android:state_pressed="false" android:state_selected="false" />
+  <!-- Pressed -->
+  <item android:drawable="@drawable/ic_photo_library_white" android:state_pressed="true" />
+</selector>

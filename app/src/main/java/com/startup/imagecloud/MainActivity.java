@@ -15,7 +15,9 @@
  */
 package com.startup.imagecloud;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,18 +25,27 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.util.Xml;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxStatus;
+import com.androidquery.util.XmlDom;
 import com.startup.imagecloud.fragment.CaptureFragment;
 import com.startup.imagecloud.fragment.HomeFragment;
-import com.telpoo.frame.ui.BetaBaseFmActivity;
+import com.telpoo.frame.utils.SPRSupport;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 import static android.view.Gravity.START;
 
@@ -44,8 +55,11 @@ public class MainActivity extends FragmentActivity {
     DrawerLayout drawer;
     private float offset;
     private boolean flipped;
-    TextView txtCapture, txtHome;
+    TextView txtCapture, txtHome, txtLogout;
     ImageView imgMenu;
+    AQuery aQuery;
+    Dialog dialog = null;
+    SPRSupport mSPrSupport;
 
 
     @Override
@@ -57,6 +71,7 @@ public class MainActivity extends FragmentActivity {
         imgMenu = (ImageView) findViewById(R.id.drawer_indicator);
         txtCapture = (TextView) findViewById(R.id.txt_capture);
         txtHome = (TextView) findViewById(R.id.txt_home);
+        txtLogout = (TextView) findViewById(R.id.txt_logout);
         final Resources resources = getResources();
 
         drawerArrowDrawable = new DrawerArrowDrawable(resources);
@@ -103,6 +118,14 @@ public class MainActivity extends FragmentActivity {
                 updateView(new CaptureFragment());
             }
         });
+        txtLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialogLogout();
+            }
+        });
+        mSPrSupport = new SPRSupport();
+        aQuery = new AQuery(this);
         updateView(new HomeFragment());
         checkLogin();
 
@@ -118,14 +141,37 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void checkLogin() {
-        showDialogLogin();
+        String username = mSPrSupport.getString("username", this);
+        String password = mSPrSupport.getString("password", this);
+        String url = MyUrl.login + "code=" + username + "&password=" + password;
+        aQuery.ajax(url, XmlDom.class, this, "checkLoginCallback");
     }
 
-    Dialog dialog=null;
+    public void showDialogLogout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.are_logout);
+        builder.setPositiveButton(R.string.logout,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        mSPrSupport.save("username", "", getApplicationContext());
+                        mSPrSupport.save("password", "", getApplicationContext());
+                        finish();
+                    }
+                });
+        builder.setNegativeButton(R.string.cancel,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     public void showDialogLogin() {
-
-        if (dialog==null){
+        if (dialog == null) {
             dialog = new Dialog(this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.login_dialog);
@@ -135,21 +181,50 @@ public class MainActivity extends FragmentActivity {
             dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT);
             Button btnLogin = (Button) dialog.findViewById(R.id.btn_login);
+            final EditText edtUsername = (EditText) dialog.findViewById(R.id.edit_username);
+            final EditText edtPassword = (EditText) dialog.findViewById(R.id.edit_pass);
             btnLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    login();
+                    String username = edtUsername.getText().toString();
+                    String password = edtPassword.getText().toString();
+                    login(username, password);
                 }
             });
         }
         dialog.show();
     }
 
-    public void login() {
-        Toast.makeText(this, getString(R.string.login_true), Toast.LENGTH_SHORT).show();
-        dialog.dismiss();
+    public void login(String username, String password) {
+        mSPrSupport.save("username", username, this);
+        mSPrSupport.save("password", password, this);
+        String url = MyUrl.login + "code=" + username + "&password=" + password;
+        Log.d("loginCallback", url);
+        aQuery.ajax(url, XmlDom.class, this, "loginCallback");
+
     }
 
-    public void updateUserView() {
+    //Login t? ??ng
+    public void checkLoginCallback(String url, XmlDom data, AjaxStatus status) {
+        if (status.getCode() == 200 && data.text().equals("0")) {
+            showDialogLogin();
+        }
     }
+
+    //Login t? form
+    public void loginCallback(String url, XmlDom data, AjaxStatus status) {
+        Log.d("loginCallback", data.text() + ": " + status.getCode());
+        if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
+            Toast.makeText(this, getString(R.string.network_err), Toast.LENGTH_SHORT).show();
+        }
+        if (status.getCode() == 200 && data.text().equals("1")) {
+            Toast.makeText(this, getString(R.string.login_true), Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }
+        if (status.getCode() == 200 && data.text().equals("0")) {
+            Toast.makeText(this, getString(R.string.login_false), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }

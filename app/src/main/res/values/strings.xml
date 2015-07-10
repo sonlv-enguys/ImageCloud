@@ -5,8 +5,16 @@
     <string name="content_hint">Content</string>
     <string name="home">Home</string>
     <string name="capture">Chụp Ảnh</string>
+    <string name="sync">Đồng Bộ</string>
+    <string name="library">Thư Viện</string>
+    <string name="logout">Đăng Xuât</string>
+    <string name="cancel">Hủy</string>
+    <string name="upload_true">Tải ảnh lên thành công!</string>
+    <string name="upload_false">Tải ảnh lên thất bại!</string>
     <string name="login_true">Đăng nhập thành công!</string>
     <string name="login_false">Lỗi đăng nhập, kiểm tra lại thông tin đăng nhập!</string>
+    <string name="network_err">Lỗi mạng, kiểm tra lại thông tin kết nối!</string>
+    <string name="are_logout">Đăng xuất và đóng ứng dụng!</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
