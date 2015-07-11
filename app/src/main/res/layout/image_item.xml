@@ -7,7 +7,6 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/library_item_height"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_home" />
+        android:scaleType="centerCrop" />
 
 </FrameLayout>

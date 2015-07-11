@@ -8,6 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.view.View;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
 import java.io.ByteArrayOutputStream;
 
 import dreamers.graphics.RippleDrawable;
@@ -47,5 +49,20 @@ public class Helper {
     }
     public static void setRippe(View view,Context context) {
         RippleDrawable ab = RippleDrawable.makeFor(view, context.getResources().getColorStateList(R.color.statelistrippe), false);
+    }
+    static DisplayImageOptions imageOptions = null;
+
+    public static DisplayImageOptions getDisplayImageOptions() {
+        if (imageOptions == null) {
+            imageOptions = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.ic_stub)
+                    .showImageForEmptyUri(R.drawable.ic_stub)
+                    .showImageOnFail(R.drawable.ic_warning).cacheInMemory(true)
+                    .cacheOnDisk(true).considerExifParams(true)
+                    .cacheOnDisc(true).bitmapConfig(Bitmap.Config.RGB_565)
+                    .build();
+        }
+        return imageOptions;
+
     }
 }

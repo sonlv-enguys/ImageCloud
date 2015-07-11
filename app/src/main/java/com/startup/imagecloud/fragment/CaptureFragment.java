@@ -48,6 +48,7 @@ public class CaptureFragment extends Fragment {
     String idImage = "";
     ProgressBarHandler progressBarHandler;
     String IMAGE_DIRECTORY_NAME = "com.startup.imagecloud";
+    ImageObj imageObj;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +99,7 @@ public class CaptureFragment extends Fragment {
         idImage = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator
-                + "IMG_" + idImage + ".jpg");
+                + "IMG_" + idImage + ".png");
     }
 
     @Override
@@ -135,6 +136,11 @@ public class CaptureFragment extends Fragment {
         Button btnCancel = (Button) dialog.findViewById(R.id.btn_cancel);
         ImageView imagePreview = (ImageView) dialog.findViewById(R.id.image_preview);
         imagePreview.setImageBitmap(bitmap);
+        imageObj = new ImageObj();
+        imageObj.set(ImageObj.ID, idImage);
+        imageObj.set(ImageObj.PATH, fileUri.getPath());
+        imageObj.set(ImageObj.UPLOADED, false);
+        DbSupport.updateImage(imageObj);
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,11 +152,6 @@ public class CaptureFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
-                ImageObj imageObj = new ImageObj();
-                imageObj.set(ImageObj.ID, idImage);
-                imageObj.set(ImageObj.PATH, fileUri.getPath());
-                imageObj.set(ImageObj.UPLOADED, false);
-                DbSupport.updateImage(imageObj);
             }
         });
         dialog.show();
@@ -160,7 +161,7 @@ public class CaptureFragment extends Fragment {
         progressBarHandler.show();
         RequestParams oj = new RequestParams();
         ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream1);
         byte[] byteImg = stream1.toByteArray();
         String encodedImage = Base64.encodeBytes(byteImg);
         Log.d(TAG, encodedImage);
@@ -177,8 +178,12 @@ public class CaptureFragment extends Fragment {
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
 
-                if (status.getCode() == 200 && data.text().equals("1")) {
+                if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
+                    Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
+                } else if (status.getCode() == 200 && data.text().equals("1")) {
                     Toast.makeText(getActivity(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
+                    imageObj.set(ImageObj.UPLOADED, true);
+                    DbSupport.updateImage(imageObj);
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.upload_false), Toast.LENGTH_SHORT).show();
                 }
@@ -189,4 +194,9 @@ public class CaptureFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        progressBarHandler.hide();
+    }
 }

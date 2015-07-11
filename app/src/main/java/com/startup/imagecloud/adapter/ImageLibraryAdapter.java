@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.androidquery.AQuery;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.R;
 import com.startup.imagecloud.db.ImageObj;
 import com.telpoo.frame.object.BaseObject;
@@ -38,10 +39,7 @@ public class ImageLibraryAdapter extends BaseAdapter {
         aQuery = new AQuery(activity);
         inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        options = new DisplayImageOptions.Builder()
-                .cacheInMemory(true) // default
-                .cacheOnDisk(true) // default
-                .build();
+        options = Helper.getDisplayImageOptions();
         imageLoader = ImageLoader.getInstance();
     }
 
@@ -67,7 +65,7 @@ public class ImageLibraryAdapter extends BaseAdapter {
         ImageView img = (ImageView) view.findViewById(R.id.image);
         String path = "file:/"+imageObj.get(ImageObj.PATH);
         Log.d("ImageLibraryAdapter",path);
-        imageLoader.displayImage(path, img);
+        imageLoader.displayImage(path, img,options);
         return view;
     }
 
