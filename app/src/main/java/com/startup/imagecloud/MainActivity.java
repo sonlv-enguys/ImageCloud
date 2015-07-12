@@ -18,6 +18,7 @@ package com.startup.imagecloud;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -43,6 +44,7 @@ import com.androidquery.util.XmlDom;
 import com.startup.imagecloud.fragment.CaptureFragment;
 import com.startup.imagecloud.fragment.HomeFragment;
 import com.startup.imagecloud.fragment.LibraryFragment;
+import com.startup.imagecloud.service.SyncService;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class MainActivity extends FragmentActivity {
     DrawerLayout drawer;
     private float offset;
     private boolean flipped;
-    TextView txtCapture, txtHome, txtLogout, txtLibrary;
+    TextView txtCapture, txtHome, txtLogout, txtLibrary, txtSync;
     ImageView imgMenu;
     AQuery aQuery;
     Dialog dialog = null;
@@ -74,6 +76,7 @@ public class MainActivity extends FragmentActivity {
         txtHome = (TextView) findViewById(R.id.txt_home);
         txtLogout = (TextView) findViewById(R.id.txt_logout);
         txtLibrary = (TextView) findViewById(R.id.txt_library);
+        txtSync = (TextView) findViewById(R.id.txt_sync);
         final Resources resources = getResources();
 
         drawerArrowDrawable = new DrawerArrowDrawable(resources);
@@ -130,6 +133,12 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 showDialogLogout();
+            }
+        });
+        txtSync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService(new Intent(MainActivity.this, SyncService.class));
             }
         });
         mSPrSupport = new SPRSupport();

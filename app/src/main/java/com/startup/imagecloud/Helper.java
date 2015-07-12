@@ -18,6 +18,7 @@ import dreamers.graphics.RippleDrawable;
  * Created by Tam Phan on 7/8/2015.
  */
 public class Helper {
+    public static final int NOTIFICATION_ID=100;
     public static String encodedImageBase64(String path) {
         String encodedImage = "";
         try {
