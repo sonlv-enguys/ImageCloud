@@ -29,6 +29,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Xml;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -139,6 +140,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 startService(new Intent(MainActivity.this, SyncService.class));
+                drawer.closeDrawers();
             }
         });
         mSPrSupport = new SPRSupport();
@@ -208,6 +210,19 @@ public class MainActivity extends FragmentActivity {
                     login(username, password);
                 }
             });
+            dialog.setOnKeyListener(new Dialog.OnKeyListener() {
+
+                @Override
+                public boolean onKey(DialogInterface arg0, int keyCode,
+                                     KeyEvent event) {
+                    // TODO Auto-generated method stub
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        finish();
+                        dialog.dismiss();
+                    }
+                    return true;
+                }
+            });
         }
         dialog.show();
     }
@@ -217,7 +232,7 @@ public class MainActivity extends FragmentActivity {
         mSPrSupport.save("password", password, this);
         String url = MyUrl.login + "code=" + username + "&password=" + password;
         Log.d("loginCallback", url);
-        aQuery.ajax(url, XmlDom.class, this, "loginCallback");
+        aQuery.progress(R.id.progress).ajax(url, XmlDom.class, this, "loginCallback");
 
     }
 

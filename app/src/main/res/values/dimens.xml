@@ -23,4 +23,5 @@
   //library
   <dimen name="library_item_height">120dp</dimen>
   <dimen name="library_item_width">70dp</dimen>
+  <dimen name="library_item_status_width">30dp</dimen>
 </resources>

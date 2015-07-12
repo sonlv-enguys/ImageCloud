@@ -59,14 +59,30 @@ public class ImageLibraryAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup parent) {
         BaseObject imageObj = data.get(position);
-        view = inflater.inflate(R.layout.image_item, null);
-        ImageView img = (ImageView) view.findViewById(R.id.image);
+        final ViewHolder holder;
+        if (view == null) {
+            view = inflater.inflate(R.layout.image_item, parent, false);
+            holder = new ViewHolder();
+            holder.imageView = (ImageView) view.findViewById(R.id.image);
+            holder.imageViewStatus = (ImageView) view.findViewById(R.id.image_status);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
+        }
         String path = "file:/"+imageObj.get(ImageObj.PATH);
-        Log.d("ImageLibraryAdapter",path);
-        imageLoader.displayImage(path, img,options);
+        Log.d("ImageLibraryAdapter", path + "");
+        imageLoader.displayImage(path, holder.imageView, options);
+        holder.imageViewStatus.setVisibility(View.GONE);
+        if(imageObj.getBool(ImageObj.UPLOADED)){
+            holder.imageViewStatus.setVisibility(View.VISIBLE);
+        }
         return view;
+    }
+    static class ViewHolder {
+        ImageView imageView;
+        ImageView imageViewStatus;
     }
 
 

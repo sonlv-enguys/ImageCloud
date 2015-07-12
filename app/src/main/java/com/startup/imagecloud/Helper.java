@@ -54,16 +54,13 @@ public class Helper {
     static DisplayImageOptions imageOptions = null;
 
     public static DisplayImageOptions getDisplayImageOptions() {
-        if (imageOptions == null) {
-            imageOptions = new DisplayImageOptions.Builder()
+        return new DisplayImageOptions.Builder()
                     .showImageOnLoading(R.drawable.ic_stub)
                     .showImageForEmptyUri(R.drawable.ic_stub)
                     .showImageOnFail(R.drawable.ic_warning).cacheInMemory(true)
                     .cacheOnDisk(true).considerExifParams(true)
                     .cacheOnDisc(true).bitmapConfig(Bitmap.Config.RGB_565)
                     .build();
-        }
-        return imageOptions;
 
     }
 }
