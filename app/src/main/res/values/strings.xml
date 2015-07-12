@@ -15,6 +15,7 @@
     <string name="login_false">Lỗi đăng nhập, kiểm tra lại thông tin đăng nhập!</string>
     <string name="network_err">Lỗi mạng, kiểm tra lại thông tin kết nối!</string>
     <string name="are_logout">Đăng xuất và đóng ứng dụng!</string>
+    <string name="sms_sync">Sync image to server %1$d/%2$d</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

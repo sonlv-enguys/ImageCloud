@@ -1,15 +1,28 @@
 package com.startup.imagecloud.service;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+import com.androidquery.util.XmlDom;
+import com.loopj.android.http.RequestParams;
+import com.startup.imagecloud.Base64;
 import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.MainActivity;
+import com.startup.imagecloud.MyUrl;
 import com.startup.imagecloud.R;
+import com.startup.imagecloud.db.DbSupport;
+import com.startup.imagecloud.db.ImageObj;
+import com.telpoo.frame.object.BaseObject;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -26,6 +39,8 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 public class SyncService extends IntentService {
     android.app.Notification notification;
@@ -34,19 +49,19 @@ public class SyncService extends IntentService {
     public static Boolean isStartService = false;
 
     SharedPreferences preferences;
-
+    ArrayList<BaseObject> images;
     AQuery aQuery;
+    String TAG = "SyncService";
 
     public SyncService() {
-        super("HelloIntentService");
+        super("SyncService");
     }
 
     /*
                  * Show notification for device
                  */
-    private void showNotification() {
+    private void showNotification(String notificationContent) {
         String notificationTitle = "Image Cound";
-        String notificationContent = "Sync image to server 1/7";
 
         // large icon for notification,normally use App icon
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
@@ -86,7 +101,54 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        showNotification();
+        aQuery = new AQuery(getApplicationContext());
+        images = DbSupport.getImageToUpload();
+        upload();
+    }
+
+    public void upload() {
+        for (int i = 0; i < images.size(); i++) {
+            BaseObject imageObj = images.get(i);
+            if (!imageObj.getBool(ImageObj.UPLOADED)) {
+                showNotification(getString(R.string.sms_sync, i, images.size()));
+                try {
+                    uploadImage(imageObj);
+                } catch (Exception e) {
+                    Log.d(TAG, "" + e);
+                }
+            }
+        }
+    }
+
+    public void uploadImage(final BaseObject obj) {
+        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+        Bitmap bitmap = BitmapFactory.decodeFile(obj.get(ImageObj.PATH));
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream1);
+        byte[] byteImg = stream1.toByteArray();
+        String encodedImage = Base64.encodeBytes(byteImg);
+        Map<String, Object> params = new HashMap<>();
+        params.put("employeeId", 1);
+        //Simply put a byte[] to the params, AQuery will detect it and treat it as a multi-part post
+        params.put("imageCode", encodedImage);
+        params.put("key", obj.get(ImageObj.ID));
+        aQuery.id(R.id.image_preview).image(bitmap);
+        aQuery.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
+
+            @Override
+            public void callback(String url, XmlDom data, AjaxStatus status) {
+
+                if (status.getCode() == 200 && data.text().equals("1")) {
+                    ImageObj imageObj = new ImageObj();
+                    imageObj.set(ImageObj.ID, obj.get(ImageObj.ID));
+                    imageObj.set(ImageObj.UPLOADED, true);
+                    imageObj.set(ImageObj.PATH, obj.get(ImageObj.PATH));
+                    DbSupport.updateImage(imageObj);
+                    upload();
+                }
+                Log.d(TAG, "" + data);
+                Log.d(TAG, "" + status.getMessage());
+            }
+        });
     }
 
 }

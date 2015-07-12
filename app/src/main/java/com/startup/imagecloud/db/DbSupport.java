@@ -43,6 +43,11 @@ public class DbSupport {
         Log.d("imageIsExist", "" + mediaVoted);
         return mediaVoted;
     }
+    public static final  ArrayList<BaseObject> getImageToUpload(){
+        String querry="select * from "+TableDbObj.IMAGE+" where "+ ImageObj.UPLOADED+" = 'false'";
 
+        ArrayList<BaseObject> data = MyDb.rawQuery(querry);
+        return data;
+    }
 
 }
