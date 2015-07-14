@@ -5,7 +5,7 @@ package com.startup.imagecloud;
  */
 public class MyUrl {
 //    http://image.ictvn.net/WS/AccountWS.asmx/AccountLogin?code=001NA&password=123456
-    public static final String login = "http://image.ictvn.net/WS/AccountWS.asmx/AccountLogin?";
+    public static final String login = "http://image.ictvn.net/WS/AccountWS.asmx/AccountLoginInfo?";
     //http://image.ictvn.net/WS/ImageCloud.asmx/UploadImage?key=string&imageCode=string&employeeId=int
     public static final String upload = "http://image.ictvn.net/WS/ImageCloud.asmx/UploadImage";
     //public static final String

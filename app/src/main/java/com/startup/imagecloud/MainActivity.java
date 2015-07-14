@@ -210,19 +210,6 @@ public class MainActivity extends FragmentActivity {
                     login(username, password);
                 }
             });
-            dialog.setOnKeyListener(new Dialog.OnKeyListener() {
-
-                @Override
-                public boolean onKey(DialogInterface arg0, int keyCode,
-                                     KeyEvent event) {
-                    // TODO Auto-generated method stub
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        finish();
-                        dialog.dismiss();
-                    }
-                    return true;
-                }
-            });
         }
         dialog.show();
     }
@@ -238,8 +225,13 @@ public class MainActivity extends FragmentActivity {
 
     //Login t? ??ng
     public void checkLoginCallback(String url, XmlDom data, AjaxStatus status) {
-        if (status.getCode() == 200 && data.text().equals("0")) {
+        Log.d("loginCallback", data.text("employeeId") + " : " + url);
+        if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
             showDialogLogin();
+        }
+        if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
+            mSPrSupport.save("employeeId", data.text("employeeId"), getApplication());
+            mSPrSupport.save("name", data.text("name"), getApplication());
         }
     }
 
@@ -249,8 +241,10 @@ public class MainActivity extends FragmentActivity {
         if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
             Toast.makeText(this, getString(R.string.network_err), Toast.LENGTH_SHORT).show();
         }
-        if (status.getCode() == 200 && data.text().equals("1")) {
+        if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
             Toast.makeText(this, getString(R.string.login_true), Toast.LENGTH_SHORT).show();
+            mSPrSupport.save("employeeId", data.text("employeeId"), getApplication());
+            mSPrSupport.save("name", data.text("name"), getApplication());
             dialog.dismiss();
         }
         if (status.getCode() == 200 && data.text().equals("0")) {

@@ -19,25 +19,6 @@ import dreamers.graphics.RippleDrawable;
  */
 public class Helper {
     public static final int NOTIFICATION_ID=100;
-    public static String encodedImageBase64(String path) {
-        String encodedImage = "";
-        try {
-//            Bitmap bm = BitmapFactory.decodeFile(path);
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-//            byte[] byteArrayImage = baos.toByteArray();
-//            encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
-            Bitmap bm = BitmapFactory.decodeFile(path);
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 90, bao);
-            byte[] ba = bao.toByteArray();
-            encodedImage = Base64.encodeBytes(ba);
-        } catch (Exception e) {
-            encodedImage = e.getMessage();
-        }
-        return encodedImage;
-    }
-
     public static boolean isOnline(final Activity activity) {
         ConnectivityManager cm = (ConnectivityManager) activity
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

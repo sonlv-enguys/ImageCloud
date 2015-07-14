@@ -23,6 +23,7 @@ import com.startup.imagecloud.R;
 import com.startup.imagecloud.db.DbSupport;
 import com.startup.imagecloud.db.ImageObj;
 import com.telpoo.frame.object.BaseObject;
+import com.telpoo.frame.utils.SPRSupport;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -52,6 +53,9 @@ public class SyncService extends IntentService {
     ArrayList<BaseObject> images;
     AQuery aQuery;
     String TAG = "SyncService";
+    SPRSupport mSPrSupport;
+    Boolean isUpload = false;
+    int index=0;
 
     public SyncService() {
         super("SyncService");
@@ -86,7 +90,7 @@ public class SyncService extends IntentService {
                 .setLargeIcon(largeIcon)
 //                .setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200})
                 .setContentIntent(pendingIntent)
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI);
+                .setSound(null);
 
 		/* Create notification with builder */
         android.app.Notification notification = notificationBuilder.build();
@@ -103,14 +107,15 @@ public class SyncService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         aQuery = new AQuery(getApplicationContext());
         images = DbSupport.getImageToUpload();
+        mSPrSupport = new SPRSupport();
         upload();
     }
 
     public void upload() {
-        for (int i = 0; i < images.size(); i++) {
-            BaseObject imageObj = images.get(i);
-            if (!imageObj.getBool(ImageObj.UPLOADED)) {
-                showNotification(getString(R.string.sms_sync, i, images.size()));
+        if (images.size()>0&&index<images.size()){
+            BaseObject imageObj = images.get(index);
+            if (!imageObj.getBool(ImageObj.UPLOADED) && !isUpload) {
+                showNotification(getString(R.string.sms_sync, index+1, images.size()));
                 try {
                     uploadImage(imageObj);
                 } catch (Exception e) {
@@ -121,30 +126,34 @@ public class SyncService extends IntentService {
     }
 
     public void uploadImage(final BaseObject obj) {
+        isUpload = true;
         ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
         Bitmap bitmap = BitmapFactory.decodeFile(obj.get(ImageObj.PATH));
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream1);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
         byte[] byteImg = stream1.toByteArray();
         String encodedImage = Base64.encodeBytes(byteImg);
         Map<String, Object> params = new HashMap<>();
-        params.put("employeeId", 1);
-        //Simply put a byte[] to the params, AQuery will detect it and treat it as a multi-part post
+        params.put("employeeId", mSPrSupport.getString("employeeId", getApplicationContext()));
+        Log.d(TAG, "" + mSPrSupport.getString("employeeId", getApplicationContext()));
+        Log.d(TAG, "" + encodedImage);
+        Log.d(TAG, "" + obj.get(ImageObj.ID));
         params.put("imageCode", encodedImage);
         params.put("key", obj.get(ImageObj.ID));
-        aQuery.id(R.id.image_preview).image(bitmap);
         aQuery.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
 
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
-
-                if (status.getCode() == 200 && data.text().equals("1")) {
+                isUpload = false;
+                if (status.getCode() == 200 && Integer.valueOf(data.text()) > 0) {
                     ImageObj imageObj = new ImageObj();
                     imageObj.set(ImageObj.ID, obj.get(ImageObj.ID));
                     imageObj.set(ImageObj.UPLOADED, true);
                     imageObj.set(ImageObj.PATH, obj.get(ImageObj.PATH));
                     DbSupport.updateImage(imageObj);
-                    upload();
                 }
+                index++;
+                upload();
+
                 Log.d(TAG, "" + data);
                 Log.d(TAG, "" + status.getMessage());
             }

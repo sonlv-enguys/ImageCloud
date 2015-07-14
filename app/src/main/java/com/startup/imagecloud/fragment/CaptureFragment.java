@@ -31,6 +31,7 @@ import com.startup.imagecloud.ProgressBarHandler;
 import com.startup.imagecloud.R;
 import com.startup.imagecloud.db.DbSupport;
 import com.startup.imagecloud.db.ImageObj;
+import com.telpoo.frame.utils.SPRSupport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,6 +50,7 @@ public class CaptureFragment extends Fragment {
     ProgressBarHandler progressBarHandler;
     String IMAGE_DIRECTORY_NAME = "com.startup.imagecloud";
     ImageObj imageObj;
+    SPRSupport mSPrSupport;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,7 @@ public class CaptureFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_caprute, container, false);
         // Inflate the layout for this fragment
         progressBarHandler = new ProgressBarHandler(getActivity());
+        mSPrSupport = new SPRSupport();
         captureImage();
         return view;
     }
@@ -161,13 +164,14 @@ public class CaptureFragment extends Fragment {
         progressBarHandler.show();
         RequestParams oj = new RequestParams();
         ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream1);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
         byte[] byteImg = stream1.toByteArray();
         String encodedImage = Base64.encodeBytes(byteImg);
         Log.d(TAG, encodedImage);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("employeeId", 1);
+        params.put("employeeId", mSPrSupport.getString("employeeId",getActivity()));
+        Log.d(TAG, "" + mSPrSupport.getString("employeeId",getActivity()));
         //Simply put a byte[] to the params, AQuery will detect it and treat it as a multi-part post
         params.put("imageCode", encodedImage);
         params.put("key", idImage);
@@ -180,7 +184,7 @@ public class CaptureFragment extends Fragment {
 
                 if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
                     Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
-                } else if (status.getCode() == 200 && data.text().equals("1")) {
+                } else if (status.getCode() == 200) {
                     Toast.makeText(getActivity(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
                     imageObj.set(ImageObj.UPLOADED, true);
                     DbSupport.updateImage(imageObj);
