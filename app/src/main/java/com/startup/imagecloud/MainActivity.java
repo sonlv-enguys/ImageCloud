@@ -251,7 +251,7 @@ public class MainActivity extends FragmentActivity {
 
     //Login t? form
     public void loginCallback(String url, XmlDom data, AjaxStatus status) {
-        Log.d("loginCallback", data.text() + ": " + status.getCode());
+        Log.d("loginCallback", data + ": " + status.getCode());
         if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
             Toast.makeText(this, getString(R.string.network_err), Toast.LENGTH_SHORT).show();
         }
@@ -261,7 +261,7 @@ public class MainActivity extends FragmentActivity {
             mSPrSupport.save("name", data.text("name"), getApplication());
             dialog.dismiss();
         }
-        if (status.getCode() == 200 && data.text().equals("0")) {
+        if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
             Toast.makeText(this, getString(R.string.login_false), Toast.LENGTH_SHORT).show();
         }
 
