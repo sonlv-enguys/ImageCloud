@@ -170,8 +170,8 @@ public class CaptureFragment extends Fragment {
         Log.d(TAG, encodedImage);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("employeeId", mSPrSupport.getString("employeeId",getActivity()));
-        Log.d(TAG, "" + mSPrSupport.getString("employeeId",getActivity()));
+        params.put("employeeId", mSPrSupport.getString("employeeId", getActivity()));
+        Log.d(TAG, "" + mSPrSupport.getString("employeeId", getActivity()));
         //Simply put a byte[] to the params, AQuery will detect it and treat it as a multi-part post
         params.put("imageCode", encodedImage);
         params.put("key", idImage);
@@ -195,12 +195,12 @@ public class CaptureFragment extends Fragment {
                 Log.d(TAG, "" + status.getMessage());
                 progressBarHandler.hide();
             }
-        });
+        }.method(AQuery.METHOD_POST));
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         progressBarHandler.hide();
     }
 }

@@ -157,7 +157,7 @@ public class SyncService extends IntentService {
                 Log.d(TAG, "" + data);
                 Log.d(TAG, "" + status.getMessage());
             }
-        });
+        }.method(AQuery.METHOD_POST));
     }
 
 }
