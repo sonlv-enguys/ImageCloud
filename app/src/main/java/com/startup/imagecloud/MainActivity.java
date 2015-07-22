@@ -33,6 +33,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -208,6 +209,19 @@ public class MainActivity extends FragmentActivity {
                     String username = edtUsername.getText().toString();
                     String password = edtPassword.getText().toString();
                     login(username, password);
+                }
+            });
+            edtPassword.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+
+                @Override
+
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        String username = edtUsername.getText().toString();
+                        String password = edtPassword.getText().toString();
+                        login(username, password);
+                    }
+                    return false;
                 }
             });
         }

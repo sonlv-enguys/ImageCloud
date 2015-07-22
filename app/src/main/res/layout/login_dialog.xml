@@ -22,6 +22,8 @@
 
             <EditText
                 android:id="@+id/edit_username"
+                android:imeOptions="actionNext"
+
                 style="@style/login_edittext"
                 android:background="@android:color/transparent"
                 android:hint="Tên Đăng Nhập" />
@@ -35,6 +37,7 @@
                 android:id="@+id/edit_pass"
                 style="@style/login_edittext"
                 android:background="@android:color/transparent"
+                android:imeOptions="actionDone"
                 android:hint="Mật Khẩu"
                 android:password="true" />
         </LinearLayout>

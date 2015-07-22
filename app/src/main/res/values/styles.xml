@@ -4,6 +4,7 @@
   <style name="SampleTheme" parent="android:Theme.Holo.Light.NoActionBar"/>
   <style name="login_edittext">
     <item name="android:layout_width">fill_parent</item>
+    <item name="android:singleLine">true</item>
     <item name="android:layout_height">@dimen/text_height</item>
     <item name="android:paddingLeft">@dimen/drawable_margin</item>
     <item name="android:drawablePadding">@dimen/drawable_margin</item>
