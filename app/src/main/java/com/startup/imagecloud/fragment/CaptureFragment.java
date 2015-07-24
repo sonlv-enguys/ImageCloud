@@ -143,7 +143,6 @@ public class CaptureFragment extends Fragment {
         imageObj.set(ImageObj.ID, idImage);
         imageObj.set(ImageObj.PATH, fileUri.getPath());
         imageObj.set(ImageObj.UPLOADED, false);
-        DbSupport.updateImage(imageObj);
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
