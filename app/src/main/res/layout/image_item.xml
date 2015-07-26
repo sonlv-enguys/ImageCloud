@@ -15,5 +15,13 @@
         android:layout_centerInParent="true"
         android:src="@drawable/ic_check_white"
         android:scaleType="fitXY" />
+    <ImageView
+        android:id="@+id/image_selected"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:src="@drawable/abc_list_focused_holo"
+        android:visibility="gone"
+        android:scaleType="fitXY" />
 
 </RelativeLayout>

@@ -106,9 +106,14 @@ public class SyncService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         aQuery = new AQuery(getApplicationContext());
-        images = DbSupport.getImageToUpload();
+images=intent.getParcelableArrayListExtra("images");
+        Log.d(TAG,""+images.size());
         mSPrSupport = new SPRSupport();
+        if(images==null){
+            images = DbSupport.getImageToUpload();
+        }
         upload();
+
     }
 
     public void upload() {
@@ -121,6 +126,10 @@ public class SyncService extends IntentService {
                 } catch (Exception e) {
                     Log.d(TAG, "" + e);
                 }
+            }
+            else{
+                index++;
+                upload();
             }
         }
     }

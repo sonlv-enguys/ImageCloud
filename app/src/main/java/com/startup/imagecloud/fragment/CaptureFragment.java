@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class CaptureFragment extends Fragment {
+public class CaptureFragment extends MyFragment {
     private Uri fileUri;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     static String TAG = "CaptureFragment";
@@ -147,6 +147,7 @@ public class CaptureFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
+                DbSupport.updateImage(imageObj);
                 uploadImage();
             }
         });
@@ -184,9 +185,9 @@ public class CaptureFragment extends Fragment {
                 if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
                     Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
                 } else if (status.getCode() == 200) {
-                    Toast.makeText(getActivity(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
                     imageObj.set(ImageObj.UPLOADED, true);
                     DbSupport.updateImage(imageObj);
+                    Toast.makeText(getActivity(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.upload_false), Toast.LENGTH_SHORT).show();
                 }

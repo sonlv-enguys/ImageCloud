@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.startup.imagecloud.R;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends MyFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

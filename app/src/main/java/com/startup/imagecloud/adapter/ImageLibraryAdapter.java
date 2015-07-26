@@ -67,6 +67,7 @@ public class ImageLibraryAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.imageView = (ImageView) view.findViewById(R.id.image);
             holder.imageViewStatus = (ImageView) view.findViewById(R.id.image_status);
+            holder.imageSelected = (ImageView) view.findViewById(R.id.image_selected);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -78,11 +79,17 @@ public class ImageLibraryAdapter extends BaseAdapter {
         if(imageObj.getBool(ImageObj.UPLOADED)){
             holder.imageViewStatus.setVisibility(View.VISIBLE);
         }
+        if (imageObj.getBool(ImageObj.SELECTED)) {
+            holder.imageSelected.setVisibility(View.VISIBLE);
+        } else {
+            holder.imageSelected.setVisibility(View.GONE);
+        }
         return view;
     }
     static class ViewHolder {
         ImageView imageView;
         ImageView imageViewStatus;
+        ImageView imageSelected;
     }
 
 
