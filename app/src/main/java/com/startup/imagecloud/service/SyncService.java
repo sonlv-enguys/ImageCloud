@@ -55,7 +55,7 @@ public class SyncService extends IntentService {
     String TAG = "SyncService";
     SPRSupport mSPrSupport;
     Boolean isUpload = false;
-    int index=0;
+    int index = 0;
 
     public SyncService() {
         super("SyncService");
@@ -106,10 +106,9 @@ public class SyncService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         aQuery = new AQuery(getApplicationContext());
-images=intent.getParcelableArrayListExtra("images");
-        Log.d(TAG,""+images.size());
+        images = intent.getParcelableArrayListExtra("images");
         mSPrSupport = new SPRSupport();
-        if(images==null){
+        if (images == null) {
             images = DbSupport.getImageToUpload();
         }
         upload();
@@ -117,17 +116,16 @@ images=intent.getParcelableArrayListExtra("images");
     }
 
     public void upload() {
-        if (images.size()>0&&index<images.size()){
+        if (images.size() > 0 && index < images.size()) {
             BaseObject imageObj = images.get(index);
             if (!imageObj.getBool(ImageObj.UPLOADED) && !isUpload) {
-                showNotification(getString(R.string.sms_sync, index+1, images.size()));
+                showNotification(getString(R.string.sms_sync, index + 1, images.size()));
                 try {
                     uploadImage(imageObj);
                 } catch (Exception e) {
                     Log.d(TAG, "" + e);
                 }
-            }
-            else{
+            } else {
                 index++;
                 upload();
             }
