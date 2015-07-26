@@ -15,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
+import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.R;
 import com.startup.imagecloud.adapter.ImageLibraryAdapter;
 import com.startup.imagecloud.db.DbSupport;
@@ -38,7 +40,7 @@ public class LibraryFragment extends MyFragment {
     ImageView imgDelete, imgSync;
     TextView txtMenuRight;
     AQuery aQuery;
-    Boolean menuRightCheck=false;
+    Boolean menuRightCheck = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,7 @@ public class LibraryFragment extends MyFragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(menuRightCheck){
+                if (menuRightCheck) {
                     BaseObject imageObj = images.get(position);
                     imageObj.set(ImageObj.SELECTED, !imageObj.getBool(ImageObj.SELECTED));
                     if (imageObj.getBool(ImageObj.SELECTED)) {
@@ -93,7 +95,12 @@ public class LibraryFragment extends MyFragment {
         imgSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                syncImage();
+                if (Helper.isOnline(getActivity())) {
+                    syncImage();
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
         txtMenuRight = aQuery.id(R.id.txt_menu_right).getTextView();
@@ -101,24 +108,24 @@ public class LibraryFragment extends MyFragment {
             @Override
             public void onClick(View v) {
                 Log.d("viewClicked", "viewClicked");
-                menuRightCheck=!menuRightCheck;
+                menuRightCheck = !menuRightCheck;
                 txtMenuRight.setText(R.string.select);
-                if (menuRightCheck){
+                if (menuRightCheck) {
                     adapter.notifyDataSetChanged();
                     txtMenuRight.setText(R.string.cancel);
-                }
-                else {
+                } else {
                     resetImage();
                 }
             }
         });
         return view;
     }
-    public void resetImage(){
-        countSelect=0;
+
+    public void resetImage() {
+        countSelect = 0;
         layoutMenu.setVisibility(View.GONE);
         for (int i = 0; i < images.size(); i++) {
-            images.get(i).set(ImageObj.SELECTED,false);
+            images.get(i).set(ImageObj.SELECTED, false);
         }
         adapter.notifyDataSetChanged();
     }
@@ -160,6 +167,7 @@ public class LibraryFragment extends MyFragment {
     }
 
     public void syncImage() {
+        Toast.makeText(getActivity(), getString(R.string.start_sync), Toast.LENGTH_SHORT).show();
         ArrayList<BaseObject> imagesUpload = new ArrayList<>();
         for (int i = 0; i < images.size(); i++) {
             BaseObject imageObj = images.get(i);

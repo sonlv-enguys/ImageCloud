@@ -65,7 +65,7 @@ public class MainActivity extends FragmentActivity {
     AQuery aQuery;
     Dialog dialog = null;
     SPRSupport mSPrSupport;
-
+Boolean isBack=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +140,12 @@ public class MainActivity extends FragmentActivity {
         txtSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(new Intent(MainActivity.this, SyncService.class));
+                if(Helper.isOnline(MainActivity.this)){
+                    startService(new Intent(MainActivity.this, SyncService.class));
+                }
+                else {
+                    Toast.makeText(MainActivity.this, getString(R.string.network_err), Toast.LENGTH_SHORT).show();
+                }
                 drawer.closeDrawers();
             }
         });
@@ -263,6 +268,17 @@ public class MainActivity extends FragmentActivity {
         }
         if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
             Toast.makeText(this, getString(R.string.login_false), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    @Override
+    public void onBackPressed() {
+        if(isBack){
+finish();
+        }
+        else {
+            Toast.makeText(this, getString(R.string.sms_back), Toast.LENGTH_SHORT).show();
+            isBack=true;
         }
 
     }
