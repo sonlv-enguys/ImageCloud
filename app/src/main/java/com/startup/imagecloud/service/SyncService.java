@@ -53,6 +53,7 @@ public class SyncService extends IntentService {
     SPRSupport mSPrSupport;
     Boolean isUpload = false;
     int index = 0;
+    int countDone = 0;
 
     public SyncService() {
         super("SyncService");
@@ -66,8 +67,8 @@ public class SyncService extends IntentService {
 
         // large icon for notification,normally use App icon
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
-                R.drawable.ic_launcher);
-        int smalIcon = R.drawable.ic_launcher;
+                R.drawable.ic_notification);
+        int smalIcon = R.drawable.ic_notification;
 
         long when = Calendar.getInstance().getTimeInMillis();
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
@@ -85,7 +86,7 @@ public class SyncService extends IntentService {
                 .setContentTitle(notificationTitle).setSmallIcon(smalIcon)
                 .setAutoCancel(true).setTicker(notificationTitle)
                 .setLargeIcon(largeIcon)
-//                .setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200})
+                .setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200})
                 .setContentIntent(pendingIntent)
                 .setSound(null);
 
@@ -103,14 +104,44 @@ public class SyncService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         aQuery = new AQuery(getApplicationContext());
-        images = intent.getParcelableArrayListExtra("images");
         mSPrSupport = new SPRSupport();
-        if (images == null) {
-            images = DbSupport.getImageToUpload();
-        }
-        isStartService = true;
-        upload();
+        Handler handler = new Handler(Looper.getMainLooper());
+        if(isStartService){
+            handler.post(new Runnable() {
 
+                @Override
+                public void run() {
+                    Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else {
+            images = intent.getParcelableArrayListExtra("images");
+            if (images == null) {
+                images = DbSupport.getImageToUpload();
+            }
+            if (images.size()>0){
+                handler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.start_sync), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                isStartService = true;
+                upload();
+            }
+            else {
+
+                handler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.upload_empty), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 
     public void upload() {
@@ -126,10 +157,12 @@ public class SyncService extends IntentService {
                 }
             } else {
                 index++;
+                countDone = countDone + 1;
                 upload();
             }
         }
         if (index == images.size()) {
+            showNotification(getString(R.string.sms_sync_done, countDone, images.size()));
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
 
@@ -167,6 +200,7 @@ public class SyncService extends IntentService {
                     imageObj.set(ImageObj.UPLOADED, true);
                     imageObj.set(ImageObj.PATH, obj.get(ImageObj.PATH));
                     DbSupport.updateImage(imageObj);
+                    countDone = countDone + 1;
                 }
                 index++;
                 upload();

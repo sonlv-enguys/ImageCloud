@@ -12,15 +12,18 @@
     <string name="delete">Xóa</string>
     <string name="select">Chọn</string>
     <string name="upload_true">Tải ảnh lên thành công!</string>
+    <string name="uploading">Đang trong quá trình đồng bộ ảnh!</string>
+    <string name="upload_empty">Không có ảnh nào cần đồng bộ!</string>
     <string name="upload_false">Tải ảnh lên thất bại!</string>
     <string name="login_true">Đăng nhập thành công!</string>
-    <string name="start_sync">Bắt đầu quá trình đồng bộ!</string>
+    <string name="start_sync">Bắt đầu quá trình đồng bộ ảnh!</string>
     <string name="login_false">Lỗi đăng nhập, kiểm tra lại thông tin đăng nhập!</string>
     <string name="sms_back">Bấm thêm lần nữa để thoát!</string>
     <string name="network_err">Lỗi mạng, kiểm tra lại thông tin kết nối!</string>
     <string name="are_logout">Đăng xuất và đóng ứng dụng!</string>
     <string name="are_delete">Tác vụ này sẽ xóa ảnh khỏi máy bạn vĩnh viễn!</string>
-    <string name="sms_sync">Sync image to server %1$d/%2$d</string>
+    <string name="sms_sync">Đang đồng bộ %1$d/%2$d ảnh</string>
+    <string name="sms_sync_done">Quá trình đồng bộ thành công %1$d/%2$d ảnh</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

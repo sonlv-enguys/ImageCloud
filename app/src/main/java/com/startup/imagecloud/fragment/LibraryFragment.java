@@ -119,7 +119,7 @@ public class LibraryFragment extends MyFragment {
             }
         });
         Helper.setRippe(imgDelete, getActivity());
-        Helper.setRippe(imgSync,getActivity());
+        Helper.setRippe(imgSync, getActivity());
         return view;
     }
 
@@ -169,17 +169,23 @@ public class LibraryFragment extends MyFragment {
     }
 
     public void syncImage() {
-        Toast.makeText(getActivity(), getString(R.string.start_sync), Toast.LENGTH_SHORT).show();
         ArrayList<BaseObject> imagesUpload = new ArrayList<>();
         for (int i = 0; i < images.size(); i++) {
             BaseObject imageObj = images.get(i);
-            if (imageObj.getBool(ImageObj.SELECTED)) {
+            if (imageObj.getBool(ImageObj.SELECTED) && !imageObj.getBool(ImageObj.UPLOADED)) {
                 imagesUpload.add(imageObj);
             }
         }
+        if(imagesUpload.size()>0)aQuery.id(R.id.progress).visibility(View.VISIBLE);
         Intent intent = new Intent(getActivity(), SyncService.class);
         intent.putParcelableArrayListExtra("images", imagesUpload);
         getActivity().startService(intent);
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("sonlv", "onResume");
+    }
 }
