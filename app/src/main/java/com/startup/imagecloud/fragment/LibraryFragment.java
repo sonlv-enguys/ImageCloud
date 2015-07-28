@@ -118,6 +118,8 @@ public class LibraryFragment extends MyFragment {
                 }
             }
         });
+        Helper.setRippe(imgDelete, getActivity());
+        Helper.setRippe(imgSync,getActivity());
         return view;
     }
 

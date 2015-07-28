@@ -37,19 +37,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 public class SyncService extends IntentService {
-    android.app.Notification notification;
-    Intent intent;
-
     public static Boolean isStartService = false;
-
-    SharedPreferences preferences;
     ArrayList<BaseObject> images;
     AQuery aQuery;
     String TAG = "SyncService";
@@ -111,11 +108,13 @@ public class SyncService extends IntentService {
         if (images == null) {
             images = DbSupport.getImageToUpload();
         }
+        isStartService = true;
         upload();
 
     }
 
     public void upload() {
+
         if (images.size() > 0 && index < images.size()) {
             BaseObject imageObj = images.get(index);
             if (!imageObj.getBool(ImageObj.UPLOADED) && !isUpload) {
@@ -129,6 +128,17 @@ public class SyncService extends IntentService {
                 index++;
                 upload();
             }
+        }
+        if (index == images.size()) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.upload_true), Toast.LENGTH_SHORT).show();
+                }
+            });
+            isStartService = false;
         }
     }
 

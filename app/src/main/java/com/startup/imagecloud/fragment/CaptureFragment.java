@@ -159,7 +159,7 @@ public class CaptureFragment extends MyFragment {
         });
         dialog.show();
     }
-
+    Boolean uploading=true;
     public void uploadImage() {
         progressBarHandler.show();
         RequestParams oj = new RequestParams();
@@ -176,12 +176,20 @@ public class CaptureFragment extends MyFragment {
         params.put("imageCode", encodedImage);
         params.put("key", idImage);
         AQuery aq = new AQuery(getActivity());
-        aq.id(R.id.image_preview).image(bitmap);
+        aq.id(R.id.image_preview).image(bitmap).clicked(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!uploading){
+                    captureImage();
+                }
+            }
+        });
+
         aq.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
 
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
-
+                uploading=false;
                 if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
                     Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
                 } else if (status.getCode() == 200) {

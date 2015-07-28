@@ -31,6 +31,7 @@ import com.startup.imagecloud.ProgressBarHandler;
 import com.startup.imagecloud.R;
 import com.startup.imagecloud.db.DbSupport;
 import com.startup.imagecloud.db.ImageObj;
+import com.startup.imagecloud.service.SyncService;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.io.ByteArrayOutputStream;
@@ -54,5 +55,17 @@ public class MyFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (aQuery==null){
+            aQuery=new AQuery(getActivity());
+        }
+        aQuery.id(R.id.progress).visibility(View.GONE);
+        if (SyncService.isStartService){
+            aQuery.id(R.id.progress).visibility(View.VISIBLE);
 
+        }
+    }
 }
+
