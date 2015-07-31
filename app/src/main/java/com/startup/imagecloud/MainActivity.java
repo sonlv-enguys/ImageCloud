@@ -47,6 +47,7 @@ import com.startup.imagecloud.fragment.CaptureFragment;
 import com.startup.imagecloud.fragment.HomeFragment;
 import com.startup.imagecloud.fragment.LibraryFragment;
 import com.startup.imagecloud.service.SyncService;
+import com.telpoo.frame.ui.BetaBaseFmActivity;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ import java.util.Objects;
 
 import static android.view.Gravity.START;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends BetaBaseFmActivity {
 
     private DrawerArrowDrawable drawerArrowDrawable;
     DrawerLayout drawer;
@@ -66,6 +67,10 @@ public class MainActivity extends FragmentActivity {
     Dialog dialog = null;
     SPRSupport mSPrSupport;
 Boolean isBack=false;
+
+    public MainActivity() {
+        super(1);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

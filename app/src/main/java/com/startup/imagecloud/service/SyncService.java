@@ -15,6 +15,11 @@ import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.util.XmlDom;
 import com.loopj.android.http.RequestParams;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.startup.imagecloud.Base64;
 import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.MainActivity;
@@ -43,6 +48,8 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class SyncService extends IntentService {
@@ -54,15 +61,16 @@ public class SyncService extends IntentService {
     Boolean isUpload = false;
     int index = 0;
     int countDone = 0;
+    ImageView imagePreview;
 
     public SyncService() {
-        super("SyncService");
+        super("ImageCloudSyncService");
     }
 
     /*
                  * Show notification for device
                  */
-    private void showNotification(String notificationContent) {
+    private void showNotification(String notificationContent,Boolean isVibrate) {
         String notificationTitle = "Image Cound";
 
         // large icon for notification,normally use App icon
@@ -86,9 +94,9 @@ public class SyncService extends IntentService {
                 .setContentTitle(notificationTitle).setSmallIcon(smalIcon)
                 .setAutoCancel(true).setTicker(notificationTitle)
                 .setLargeIcon(largeIcon)
-                .setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200})
                 .setContentIntent(pendingIntent)
                 .setSound(null);
+        if (isVibrate)notificationBuilder.setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200});
 
 		/* Create notification with builder */
         android.app.Notification notification = notificationBuilder.build();
@@ -106,7 +114,7 @@ public class SyncService extends IntentService {
         aQuery = new AQuery(getApplicationContext());
         mSPrSupport = new SPRSupport();
         Handler handler = new Handler(Looper.getMainLooper());
-        if(isStartService){
+        if (isStartService) {
             handler.post(new Runnable() {
 
                 @Override
@@ -114,13 +122,19 @@ public class SyncService extends IntentService {
                     Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-        else {
+        } else {
+            boolean checkUpload = false;
             images = intent.getParcelableArrayListExtra("images");
             if (images == null) {
                 images = DbSupport.getImageToUpload();
             }
-            if (images.size()>0){
+            for (int i = 0; i < images.size(); i++) {
+                if (!DbSupport.imageIsUploaded(images.get(i).get(ImageObj.ID))) {
+                    checkUpload = true;
+                    break;
+                }
+            }
+            if (images.size() > 0 && checkUpload) {
                 handler.post(new Runnable() {
 
                     @Override
@@ -129,9 +143,9 @@ public class SyncService extends IntentService {
                     }
                 });
                 isStartService = true;
+                imagePreview = new ImageView(getApplicationContext());
                 upload();
-            }
-            else {
+            } else {
 
                 handler.post(new Runnable() {
 
@@ -149,7 +163,9 @@ public class SyncService extends IntentService {
         if (images.size() > 0 && index < images.size()) {
             BaseObject imageObj = images.get(index);
             if (!imageObj.getBool(ImageObj.UPLOADED) && !isUpload) {
-                showNotification(getString(R.string.sms_sync, index + 1, images.size()));
+                Boolean isVibrate=false;
+                if(index==0)isVibrate=true;
+                showNotification(getString(R.string.sms_sync, index + 1, images.size()),isVibrate);
                 try {
                     uploadImage(imageObj);
                 } catch (Exception e) {
@@ -162,7 +178,7 @@ public class SyncService extends IntentService {
             }
         }
         if (index == images.size()) {
-            showNotification(getString(R.string.sms_sync_done, countDone, images.size()));
+            showNotification(getString(R.string.sms_sync_done, countDone, images.size()),true);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
 
@@ -175,12 +191,33 @@ public class SyncService extends IntentService {
         }
     }
 
+
     public void uploadImage(final BaseObject obj) {
         isUpload = true;
-        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-        Bitmap bitmap = BitmapFactory.decodeFile(obj.get(ImageObj.PATH));
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
-        byte[] byteImg = stream1.toByteArray();
+        DisplayImageOptions option = new DisplayImageOptions.Builder().cacheOnDisk(false).bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        ImageLoadingListener lister = new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                super.onLoadingComplete(imageUri, view, loadedImage);
+                ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+                loadedImage.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
+                byte[] byteImg = stream1.toByteArray();
+                postImage(byteImg, obj);
+                Log.d(TAG, "" + "onLoadingComplete");
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                super.onLoadingFailed(imageUri, view, failReason);
+                Log.d(TAG, "" + "onLoadingFailed");
+            }
+        };
+
+        ImageLoader.getInstance().displayImage("file:/" + obj.get(ImageObj.PATH), imagePreview, option, lister);
+
+    }
+
+    public void postImage(byte[] byteImg, final BaseObject obj) {
         String encodedImage = Base64.encodeBytes(byteImg);
         Map<String, Object> params = new HashMap<>();
         params.put("employeeId", mSPrSupport.getString("employeeId", getApplicationContext()));
@@ -189,7 +226,7 @@ public class SyncService extends IntentService {
         Log.d(TAG, "" + obj.get(ImageObj.ID));
         params.put("imageCode", encodedImage);
         params.put("key", obj.get(ImageObj.ID));
-        aQuery.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
+        AjaxCallback<XmlDom> ajaxCallback = new AjaxCallback<XmlDom>() {
 
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
@@ -208,7 +245,9 @@ public class SyncService extends IntentService {
                 Log.d(TAG, "" + data);
                 Log.d(TAG, "" + status.getMessage());
             }
-        }.method(AQuery.METHOD_POST));
+        }.method(AQuery.METHOD_POST);
+        ajaxCallback.setTimeout(60000);
+        aQuery.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, ajaxCallback);
     }
 
 }

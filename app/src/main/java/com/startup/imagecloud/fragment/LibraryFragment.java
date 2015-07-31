@@ -109,7 +109,6 @@ public class LibraryFragment extends MyFragment {
             public void onClick(View v) {
                 Log.d("viewClicked", "viewClicked");
                 menuRightCheck = !menuRightCheck;
-                txtMenuRight.setText(R.string.select);
                 if (menuRightCheck) {
                     adapter.notifyDataSetChanged();
                     txtMenuRight.setText(R.string.cancel);
@@ -129,6 +128,7 @@ public class LibraryFragment extends MyFragment {
         for (int i = 0; i < images.size(); i++) {
             images.get(i).set(ImageObj.SELECTED, false);
         }
+        txtMenuRight.setText(R.string.select);
         adapter.notifyDataSetChanged();
     }
 
@@ -165,7 +165,7 @@ public class LibraryFragment extends MyFragment {
                 }
             }
         }
-        adapter.notifyDataSetChanged();
+        resetImage();
     }
 
     public void syncImage() {
@@ -180,6 +180,7 @@ public class LibraryFragment extends MyFragment {
         Intent intent = new Intent(getActivity(), SyncService.class);
         intent.putParcelableArrayListExtra("images", imagesUpload);
         getActivity().startService(intent);
+        resetImage();
 
     }
 

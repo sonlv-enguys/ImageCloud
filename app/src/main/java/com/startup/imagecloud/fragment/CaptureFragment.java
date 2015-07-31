@@ -24,7 +24,14 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.androidquery.util.XmlDom;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.startup.imagecloud.Base64;
 import com.startup.imagecloud.MyUrl;
 import com.startup.imagecloud.ProgressBarHandler;
@@ -33,8 +40,12 @@ import com.startup.imagecloud.db.DbSupport;
 import com.startup.imagecloud.db.ImageObj;
 import com.telpoo.frame.utils.SPRSupport;
 
+import org.apache.http.Header;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,12 +56,13 @@ public class CaptureFragment extends MyFragment {
     private Uri fileUri;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     static String TAG = "CaptureFragment";
-    Bitmap bitmap = null;
     String idImage = "";
     ProgressBarHandler progressBarHandler;
     String IMAGE_DIRECTORY_NAME = "com.startup.imagecloud";
     ImageObj imageObj;
     SPRSupport mSPrSupport;
+    ImageLoader imageLoader;
+    ImageView imagePreview;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +75,10 @@ public class CaptureFragment extends MyFragment {
         View view = inflater.inflate(R.layout.fragment_caprute, container, false);
         // Inflate the layout for this fragment
         progressBarHandler = new ProgressBarHandler(getActivity());
+        imagePreview = (ImageView) view.findViewById(R.id.image_preview);
+
         mSPrSupport = new SPRSupport();
+        imageLoader = ImageLoader.getInstance();
         captureImage();
         return view;
     }
@@ -126,7 +141,6 @@ public class CaptureFragment extends MyFragment {
     }
 
     public void showPreview() {
-        bitmap = BitmapFactory.decodeFile(fileUri.getPath());
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.preview_dialog);
@@ -138,7 +152,7 @@ public class CaptureFragment extends MyFragment {
         Button btnUpload = (Button) dialog.findViewById(R.id.btn_upload);
         Button btnCancel = (Button) dialog.findViewById(R.id.btn_cancel);
         ImageView imagePreview = (ImageView) dialog.findViewById(R.id.image_preview);
-        imagePreview.setImageBitmap(bitmap);
+        imageLoader.displayImage(fileUri.toString(), imagePreview);
         imageObj = new ImageObj();
         imageObj.set(ImageObj.ID, idImage);
         imageObj.set(ImageObj.PATH, fileUri.getPath());
@@ -159,37 +173,91 @@ public class CaptureFragment extends MyFragment {
         });
         dialog.show();
     }
-    Boolean uploading=true;
+
+    Boolean uploading = true;
+
+    //    public void uploadImage() {
+//        progressBarHandler.show();
+//        RequestParams oj = new RequestParams();
+//        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
+//        byte[] byteImg = stream1.toByteArray();
+//        oj.put("f", new ByteArrayInputStream(byteImg), "image.jpg");
+//        oj.put("employeeId", mSPrSupport.getString("employeeId", getActivity()));
+//        oj.put("fileName", idImage+"jpg");
+//        oj.put("key", idImage);
+//        AQuery aq = new AQuery(getActivity());
+//        aq.id(R.id.image_preview).image(bitmap).clicked(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!uploading) {
+//                    captureImage();
+//                }
+//            }
+//        });
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        final TextHttpResponseHandler textResponse=new TextHttpResponseHandler() {
+//            @Override
+//            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+//                Log.d("AsyncHttpClient","onFailure: "+s);
+//            }
+//
+//            @Override
+//            public void onSuccess(int i, Header[] headers, String s) {
+//                Log.d("AsyncHttpClient","onSuccess: "+s);
+//            }
+//        };
+////        textResponse.setCharset("UTF-8");
+////        textResponse.setCharset("utf-8");
+//        client.post(MyUrl.upload, oj,textResponse);
+//
+//
+//    }
     public void uploadImage() {
         progressBarHandler.show();
-        RequestParams oj = new RequestParams();
-        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
-        byte[] byteImg = stream1.toByteArray();
+        DisplayImageOptions option = new DisplayImageOptions.Builder().cacheOnDisk(false).bitmapConfig(Bitmap.Config.ARGB_8888).build();
+        ImageLoadingListener lister = new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                super.onLoadingComplete(imageUri, view, loadedImage);
+                ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+                loadedImage.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
+                byte[] byteImg = stream1.toByteArray();
+                postImage(byteImg);
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                super.onLoadingFailed(imageUri, view, failReason);
+            }
+        };
+        imageLoader.displayImage(fileUri.toString(), imagePreview, option, lister);
+
+    }
+
+    public void postImage(byte[] byteImg) {
         String encodedImage = Base64.encodeBytes(byteImg);
         Log.d(TAG, encodedImage);
 
         Map<String, Object> params = new HashMap<>();
         params.put("employeeId", mSPrSupport.getString("employeeId", getActivity()));
         Log.d(TAG, "" + mSPrSupport.getString("employeeId", getActivity()));
-        //Simply put a byte[] to the params, AQuery will detect it and treat it as a multi-part post
         params.put("imageCode", encodedImage);
         params.put("key", idImage);
         AQuery aq = new AQuery(getActivity());
-        aq.id(R.id.image_preview).image(bitmap).clicked(new View.OnClickListener() {
+        aq.id(R.id.image_preview).clicked(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!uploading){
+                if (!uploading) {
                     captureImage();
                 }
             }
         });
-
-        aq.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, new AjaxCallback<XmlDom>() {
+        AjaxCallback<XmlDom> ajaxCallback = new AjaxCallback<XmlDom>() {
 
             @Override
             public void callback(String url, XmlDom data, AjaxStatus status) {
-                uploading=false;
+                uploading = false;
                 if (status.getCode() == AjaxStatus.NETWORK_ERROR) {
                     Toast.makeText(getActivity(), getString(R.string.network_err), Toast.LENGTH_SHORT).show();
                 } else if (status.getCode() == 200) {
@@ -203,7 +271,9 @@ public class CaptureFragment extends MyFragment {
                 Log.d(TAG, "" + status.getMessage());
                 progressBarHandler.hide();
             }
-        }.method(AQuery.METHOD_POST));
+        }.method(AQuery.METHOD_POST);
+        ajaxCallback.setTimeout(60000);
+        aq.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, ajaxCallback);
     }
 
     @Override
