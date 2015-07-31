@@ -19,6 +19,7 @@ import dreamers.graphics.RippleDrawable;
  */
 public class Helper {
     public static final int NOTIFICATION_ID=100;
+    public static final String FILTER = "com.startup.imagecloud.ServiceUpload";
     public static boolean isOnline(final Activity activity) {
         ConnectivityManager cm = (ConnectivityManager) activity
                 .getSystemService(Context.CONNECTIVITY_SERVICE);

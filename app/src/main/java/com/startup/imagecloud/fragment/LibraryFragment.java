@@ -1,10 +1,14 @@
 package com.startup.imagecloud.fragment;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,7 +180,6 @@ public class LibraryFragment extends MyFragment {
                 imagesUpload.add(imageObj);
             }
         }
-        if(imagesUpload.size()>0)aQuery.id(R.id.progress).visibility(View.VISIBLE);
         Intent intent = new Intent(getActivity(), SyncService.class);
         intent.putParcelableArrayListExtra("images", imagesUpload);
         getActivity().startService(intent);
@@ -185,8 +188,25 @@ public class LibraryFragment extends MyFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("sonlv", "onResume");
+    public void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((mMessageReceiver), new IntentFilter(Helper.FILTER));
     }
+
+    @Override
+    public void onStop() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onStop();
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String sms = intent.getStringExtra("sms");
+            if (sms.equals("end")) {
+                adapter.notifyDataSetChanged();
+                Log.d("mMessageReceiver", "update");
+            }
+        }
+    };
 }

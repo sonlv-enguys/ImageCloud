@@ -127,10 +127,6 @@ public class CaptureFragment extends MyFragment {
             if (resultCode == Activity.RESULT_OK) {
                 showPreview();
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                // user cancelled Image capture
-                Toast.makeText(getActivity(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
             } else {
                 // failed to capture image
                 Toast.makeText(getActivity(),
@@ -176,43 +172,6 @@ public class CaptureFragment extends MyFragment {
 
     Boolean uploading = true;
 
-    //    public void uploadImage() {
-//        progressBarHandler.show();
-//        RequestParams oj = new RequestParams();
-//        ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream1);
-//        byte[] byteImg = stream1.toByteArray();
-//        oj.put("f", new ByteArrayInputStream(byteImg), "image.jpg");
-//        oj.put("employeeId", mSPrSupport.getString("employeeId", getActivity()));
-//        oj.put("fileName", idImage+"jpg");
-//        oj.put("key", idImage);
-//        AQuery aq = new AQuery(getActivity());
-//        aq.id(R.id.image_preview).image(bitmap).clicked(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!uploading) {
-//                    captureImage();
-//                }
-//            }
-//        });
-//        AsyncHttpClient client = new AsyncHttpClient();
-//        final TextHttpResponseHandler textResponse=new TextHttpResponseHandler() {
-//            @Override
-//            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
-//                Log.d("AsyncHttpClient","onFailure: "+s);
-//            }
-//
-//            @Override
-//            public void onSuccess(int i, Header[] headers, String s) {
-//                Log.d("AsyncHttpClient","onSuccess: "+s);
-//            }
-//        };
-////        textResponse.setCharset("UTF-8");
-////        textResponse.setCharset("utf-8");
-//        client.post(MyUrl.upload, oj,textResponse);
-//
-//
-//    }
     public void uploadImage() {
         progressBarHandler.show();
         DisplayImageOptions option = new DisplayImageOptions.Builder().cacheOnDisk(false).bitmapConfig(Bitmap.Config.ARGB_8888).build();

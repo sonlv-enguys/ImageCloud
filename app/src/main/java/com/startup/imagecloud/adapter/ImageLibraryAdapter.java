@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.R;
+import com.startup.imagecloud.db.DbSupport;
 import com.startup.imagecloud.db.ImageObj;
 import com.telpoo.frame.object.BaseObject;
 
@@ -76,7 +77,7 @@ public class ImageLibraryAdapter extends BaseAdapter {
         Log.d("ImageLibraryAdapter", path + "");
         imageLoader.displayImage(path, holder.imageView, options);
         holder.imageViewStatus.setVisibility(View.GONE);
-        if(imageObj.getBool(ImageObj.UPLOADED)){
+        if(DbSupport.imageIsUploaded(imageObj.get(ImageObj.ID))){
             holder.imageViewStatus.setVisibility(View.VISIBLE);
         }
         if (imageObj.getBool(ImageObj.SELECTED)) {

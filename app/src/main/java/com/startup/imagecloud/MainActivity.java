@@ -17,14 +17,18 @@ package com.startup.imagecloud;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Xml;
@@ -47,7 +51,6 @@ import com.startup.imagecloud.fragment.CaptureFragment;
 import com.startup.imagecloud.fragment.HomeFragment;
 import com.startup.imagecloud.fragment.LibraryFragment;
 import com.startup.imagecloud.service.SyncService;
-import com.telpoo.frame.ui.BetaBaseFmActivity;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.util.ArrayList;
@@ -55,7 +58,7 @@ import java.util.Objects;
 
 import static android.view.Gravity.START;
 
-public class MainActivity extends BetaBaseFmActivity {
+public class MainActivity extends FragmentActivity {
 
     private DrawerArrowDrawable drawerArrowDrawable;
     DrawerLayout drawer;
@@ -66,11 +69,7 @@ public class MainActivity extends BetaBaseFmActivity {
     AQuery aQuery;
     Dialog dialog = null;
     SPRSupport mSPrSupport;
-Boolean isBack=false;
-
-    public MainActivity() {
-        super(1);
-    }
+    Boolean isBack = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,10 +144,9 @@ Boolean isBack=false;
         txtSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Helper.isOnline(MainActivity.this)){
+                if (Helper.isOnline(MainActivity.this)) {
                     startService(new Intent(MainActivity.this, SyncService.class));
-                }
-                else {
+                } else {
                     Toast.makeText(MainActivity.this, getString(R.string.network_err), Toast.LENGTH_SHORT).show();
                 }
                 drawer.closeDrawers();
@@ -276,16 +274,40 @@ Boolean isBack=false;
         }
 
     }
+
     @Override
     public void onBackPressed() {
-        if(isBack){
-finish();
-        }
-        else {
+        if (isBack) {
+            finish();
+        } else {
             Toast.makeText(this, getString(R.string.sms_back), Toast.LENGTH_SHORT).show();
-            isBack=true;
+            isBack = true;
         }
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver), new IntentFilter(Helper.FILTER));
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onStop();
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String sms=intent.getStringExtra("sms");
+//            Log.d("mMessageReceiver", sms);
+            if(sms.equals("start"))aQuery.id(R.id.progress).visibility(View.VISIBLE);
+            if(sms.equals("end"))aQuery.id(R.id.progress).visibility(View.GONE);
+        }
+    };
+
+
 
 }

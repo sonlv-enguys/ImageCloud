@@ -47,6 +47,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -70,7 +71,7 @@ public class SyncService extends IntentService {
     /*
                  * Show notification for device
                  */
-    private void showNotification(String notificationContent,Boolean isVibrate) {
+    private void showNotification(String notificationContent, Boolean isVibrate) {
         String notificationTitle = "Image Cound";
 
         // large icon for notification,normally use App icon
@@ -96,7 +97,7 @@ public class SyncService extends IntentService {
                 .setLargeIcon(largeIcon)
                 .setContentIntent(pendingIntent)
                 .setSound(null);
-        if (isVibrate)notificationBuilder.setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200});
+        if (isVibrate) notificationBuilder.setVibrate(new long[]{0, 100, 200, 100, 200, 100, 200});
 
 		/* Create notification with builder */
         android.app.Notification notification = notificationBuilder.build();
@@ -144,7 +145,9 @@ public class SyncService extends IntentService {
                 });
                 isStartService = true;
                 imagePreview = new ImageView(getApplicationContext());
+                sendUpdateMessage("start");
                 upload();
+
             } else {
 
                 handler.post(new Runnable() {
@@ -154,18 +157,18 @@ public class SyncService extends IntentService {
                         Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.upload_empty), Toast.LENGTH_SHORT).show();
                     }
                 });
+                sendUpdateMessage("end");
             }
         }
     }
 
     public void upload() {
-
         if (images.size() > 0 && index < images.size()) {
             BaseObject imageObj = images.get(index);
             if (!imageObj.getBool(ImageObj.UPLOADED) && !isUpload) {
-                Boolean isVibrate=false;
-                if(index==0)isVibrate=true;
-                showNotification(getString(R.string.sms_sync, index + 1, images.size()),isVibrate);
+                Boolean isVibrate = false;
+                if (index == 0) isVibrate = true;
+                showNotification(getString(R.string.sms_sync, index + 1, images.size()), isVibrate);
                 try {
                     uploadImage(imageObj);
                 } catch (Exception e) {
@@ -178,7 +181,7 @@ public class SyncService extends IntentService {
             }
         }
         if (index == images.size()) {
-            showNotification(getString(R.string.sms_sync_done, countDone, images.size()),true);
+            showNotification(getString(R.string.sms_sync_done, countDone, images.size()), true);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
 
@@ -188,6 +191,7 @@ public class SyncService extends IntentService {
                 }
             });
             isStartService = false;
+            sendUpdateMessage("end");
         }
     }
 
@@ -248,6 +252,13 @@ public class SyncService extends IntentService {
         }.method(AQuery.METHOD_POST);
         ajaxCallback.setTimeout(60000);
         aQuery.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, ajaxCallback);
+    }
+
+    private void sendUpdateMessage(String sms) {
+        Intent intent = new Intent(Helper.FILTER);
+        intent.putExtra("sms", sms);
+        Log.d("mMessageReceiver", "Send");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 }

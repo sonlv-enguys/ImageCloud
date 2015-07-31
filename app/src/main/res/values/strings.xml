@@ -11,7 +11,7 @@
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
     <string name="select">Chọn</string>
-    <string name="upload_true">Tải ảnh lên thành công!</string>
+    <string name="upload_true">Tải ảnh lên hoàn tất!</string>
     <string name="uploading">Đang trong quá trình đồng bộ ảnh!</string>
     <string name="upload_empty">Không có ảnh nào cần đồng bộ!</string>
     <string name="upload_false">Tải ảnh lên thất bại!</string>
