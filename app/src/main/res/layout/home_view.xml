@@ -78,129 +78,201 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-
         <LinearLayout
+            android:layout_gravity="start"
             android:id="@+id/layout_menu"
             android:layout_width="@dimen/menu_width"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
             android:background="@color/bg"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/menu_margin_left"
-            android:paddingTop="@dimen/menu_margin_top">
+            android:paddingLeft="@dimen/menu_margin_left">
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="@dimen/menu_width"
+            android:layout_height="match_parent"
+           >
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_item_height">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <RelativeLayout
-                    android:layout_width="@dimen/menu_layout_icon_size"
-                    android:layout_height="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:layout_width="@dimen/menu_icon_size"
-                        android:layout_height="@dimen/menu_icon_size"
+                    <RelativeLayout
+                        android:id="@+id/layout_avata"
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="@dimen/menu_item_height"
+                        android:layout_centerVertical="true">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_user" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_home_white" />
+                        android:layout_toRightOf="@+id/layout_avata"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txt_name"
+                            style="@style/menu_uer_info_text"
+                            android:text="@string/home" />
+
+                        <TextView
+                            android:id="@+id/txt_id"
+                            style="@style/menu_uer_info_text"
+                            android:text="@string/home" />
+                    </LinearLayout>
+
+
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/txt_home"
-                    style="@style/menu_text"
-                    android:text="@string/home" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_item_height"
+                    android:layout_marginTop="@dimen/menu_margin_top">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_home_white" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_home"
+                        style="@style/menu_text"
+                        android:text="@string/home" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_item_height">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_photo_camera_white" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_capture"
+                        style="@style/menu_text"
+                        android:text="@string/capture" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_item_height">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_sync_white" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_sync"
+                        style="@style/menu_text"
+                        android:text="@string/sync" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_item_height">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_photo_library_white" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_library"
+                        style="@style/menu_text"
+                        android:text="@string/library" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/menu_item_height">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_logout_white" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_logout"
+                        style="@style/menu_text"
+                        android:text="@string/logout" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="@dimen/menu_margin_top"
+                    android:layout_height="@dimen/menu_item_height">
+
+                    <RelativeLayout
+                        android:layout_width="@dimen/menu_layout_icon_size"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/menu_icon_size"
+                            android:layout_height="@dimen/menu_icon_size"
+                            android:layout_centerVertical="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/ic_exit" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_exit"
+                        style="@style/menu_text"
+                        android:text="@string/exit" />
+                </LinearLayout>
+
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_item_height">
-
-                <RelativeLayout
-                    android:layout_width="@dimen/menu_layout_icon_size"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="@dimen/menu_icon_size"
-                        android:layout_height="@dimen/menu_icon_size"
-                        android:layout_centerVertical="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_photo_camera_white" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/txt_capture"
-                    style="@style/menu_text"
-                    android:text="@string/capture" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_item_height">
-
-                <RelativeLayout
-                    android:layout_width="@dimen/menu_layout_icon_size"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="@dimen/menu_icon_size"
-                        android:layout_height="@dimen/menu_icon_size"
-                        android:layout_centerVertical="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_sync_white" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/txt_sync"
-                    style="@style/menu_text"
-                    android:text="@string/sync" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_item_height">
-
-                <RelativeLayout
-                    android:layout_width="@dimen/menu_layout_icon_size"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="@dimen/menu_icon_size"
-                        android:layout_height="@dimen/menu_icon_size"
-                        android:layout_centerVertical="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_photo_library_white" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/txt_library"
-                    style="@style/menu_text"
-                    android:text="@string/library" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/menu_item_height">
-
-                <RelativeLayout
-                    android:layout_width="@dimen/menu_layout_icon_size"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="@dimen/menu_icon_size"
-                        android:layout_height="@dimen/menu_icon_size"
-                        android:layout_centerVertical="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/ic_logout_white" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/txt_logout"
-                    style="@style/menu_text"
-                    android:text="@string/logout" />
-            </LinearLayout>
-
+        </ScrollView>
         </LinearLayout>
-
     </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>

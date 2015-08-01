@@ -7,7 +7,8 @@
     <string name="capture">Chụp Ảnh</string>
     <string name="sync">Đồng Bộ</string>
     <string name="library">Thư Viện</string>
-    <string name="logout">Đăng Xuât</string>
+    <string name="logout">Đăng Xuất</string>
+    <string name="exit">Thoát</string>
     <string name="cancel">Hủy</string>
     <string name="delete">Xóa</string>
     <string name="select">Chọn</string>

@@ -64,7 +64,7 @@ public class MainActivity extends FragmentActivity {
     DrawerLayout drawer;
     private float offset;
     private boolean flipped;
-    TextView txtCapture, txtHome, txtLogout, txtLibrary, txtSync;
+    TextView txtCapture, txtHome, txtLogout, txtLibrary, txtSync, txtExit;
     ImageView imgMenu;
     AQuery aQuery;
     Dialog dialog = null;
@@ -82,6 +82,7 @@ public class MainActivity extends FragmentActivity {
         txtHome = (TextView) findViewById(R.id.txt_home);
         txtLogout = (TextView) findViewById(R.id.txt_logout);
         txtLibrary = (TextView) findViewById(R.id.txt_library);
+        txtExit = (TextView) findViewById(R.id.txt_exit);
         txtSync = (TextView) findViewById(R.id.txt_sync);
         final Resources resources = getResources();
 
@@ -135,6 +136,12 @@ public class MainActivity extends FragmentActivity {
                 updateView(new CaptureFragment());
             }
         });
+        txtExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +163,7 @@ public class MainActivity extends FragmentActivity {
         aQuery = new AQuery(this);
         updateView(new HomeFragment());
         checkLogin();
+        updateUserInfo();
 
     }
 
@@ -170,9 +178,9 @@ public class MainActivity extends FragmentActivity {
 
     public void checkLogin() {
         String username = mSPrSupport.getString("username", this);
-        String password = mSPrSupport.getString("password", this);
-        String url = MyUrl.login + "code=" + username + "&password=" + password;
-        aQuery.ajax(url, XmlDom.class, this, "checkLoginCallback");
+        if (username.equals("")) {
+            showDialogLogin();
+        }
     }
 
     public void showDialogLogout() {
@@ -184,6 +192,7 @@ public class MainActivity extends FragmentActivity {
                         dialog.cancel();
                         mSPrSupport.save("username", "", getApplicationContext());
                         mSPrSupport.save("password", "", getApplicationContext());
+                        mSPrSupport.save("employeeId", "", getApplicationContext());
                         finish();
                     }
                 });
@@ -245,17 +254,6 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    //Login t? ??ng
-    public void checkLoginCallback(String url, XmlDom data, AjaxStatus status) {
-        Log.d("loginCallback", data.text("employeeId") + " : " + url);
-        if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
-            showDialogLogin();
-        }
-        if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
-            mSPrSupport.save("employeeId", data.text("employeeId"), getApplication());
-            mSPrSupport.save("name", data.text("name"), getApplication());
-        }
-    }
 
     //Login t? form
     public void loginCallback(String url, XmlDom data, AjaxStatus status) {
@@ -267,12 +265,18 @@ public class MainActivity extends FragmentActivity {
             Toast.makeText(this, getString(R.string.login_true), Toast.LENGTH_SHORT).show();
             mSPrSupport.save("employeeId", data.text("employeeId"), getApplication());
             mSPrSupport.save("name", data.text("name"), getApplication());
+            updateUserInfo();
             dialog.dismiss();
         }
         if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
             Toast.makeText(this, getString(R.string.login_false), Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    public void updateUserInfo() {
+        aQuery.id(R.id.txt_name).text(mSPrSupport.getString("name", getApplication()));
+        aQuery.id(R.id.txt_id).text(mSPrSupport.getString("username", getApplication()));
     }
 
     @Override
@@ -301,13 +305,12 @@ public class MainActivity extends FragmentActivity {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String sms=intent.getStringExtra("sms");
+            String sms = intent.getStringExtra("sms");
 //            Log.d("mMessageReceiver", sms);
-            if(sms.equals("start"))aQuery.id(R.id.progress).visibility(View.VISIBLE);
-            if(sms.equals("end"))aQuery.id(R.id.progress).visibility(View.GONE);
+            if (sms.equals("start")) aQuery.id(R.id.progress).visibility(View.VISIBLE);
+            if (sms.equals("end")) aQuery.id(R.id.progress).visibility(View.GONE);
         }
     };
-
 
 
 }

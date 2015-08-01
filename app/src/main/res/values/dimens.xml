@@ -13,12 +13,13 @@
 
   //menu
   <dimen name="menu_text_size">23dp</dimen>
+  <dimen name="menu_user_size">14dp</dimen>
   <dimen name="menu_icon_size">40dp</dimen>
   <dimen name="menu_layout_icon_size">50dp</dimen>
-  <dimen name="menu_margin_top">30dp</dimen>
+  <dimen name="menu_margin_top">10dp</dimen>
   <dimen name="menu_margin_left">30dp</dimen>
-  <dimen name="menu_item_height">70dp</dimen>
-  <dimen name="menu_width">240dp</dimen>
+  <dimen name="menu_item_height">60dp</dimen>
+  <dimen name="menu_width">260dp</dimen>
 
   //library
   <dimen name="library_item_height">120dp</dimen>

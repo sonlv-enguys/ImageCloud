@@ -72,7 +72,7 @@ public class SyncService extends IntentService {
                  * Show notification for device
                  */
     private void showNotification(String notificationContent, Boolean isVibrate) {
-        String notificationTitle = "Image Cound";
+        String notificationTitle = getString(R.string.app_name);
 
         // large icon for notification,normally use App icon
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
