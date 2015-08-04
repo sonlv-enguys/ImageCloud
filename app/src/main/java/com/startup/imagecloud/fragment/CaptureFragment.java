@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +36,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.startup.imagecloud.Base64;
+import com.startup.imagecloud.Helper;
 import com.startup.imagecloud.MyUrl;
 import com.startup.imagecloud.ProgressBarHandler;
 import com.startup.imagecloud.R;
@@ -47,6 +51,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -127,6 +132,10 @@ public class CaptureFragment extends MyFragment {
             if (resultCode == Activity.RESULT_OK) {
                 showPreview();
             } else if (resultCode == Activity.RESULT_CANCELED) {
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.replace(R.id.view_content, new HomeFragment());
+                ft.commit();
             } else {
                 // failed to capture image
                 Toast.makeText(getActivity(),
@@ -153,12 +162,13 @@ public class CaptureFragment extends MyFragment {
         imageObj.set(ImageObj.ID, idImage);
         imageObj.set(ImageObj.PATH, fileUri.getPath());
         imageObj.set(ImageObj.UPLOADED, false);
+        imageObj.set(ImageObj.USER, mSPrSupport.getString("username", getActivity()));
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.cancel();
                 DbSupport.updateImage(imageObj);
-                uploadImage();
+                checkLogin();
             }
         });
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +244,39 @@ public class CaptureFragment extends MyFragment {
         ajaxCallback.setTimeout(60000);
         aq.progress(R.id.progress).ajax(MyUrl.upload, params, XmlDom.class, ajaxCallback);
     }
+
+    public void checkLogin() {
+        Calendar cal = Calendar.getInstance();
+        long curTime = cal.getTimeInMillis();
+        Log.d("loginCallback", curTime + ": " + mSPrSupport.getLong("lastLogin", getActivity()));
+        if (curTime - mSPrSupport.getLong("lastLogin", getActivity()) < 2400000) {
+            uploadImage();
+        } else {
+            AjaxCallback<XmlDom> ajaxCallback = new AjaxCallback<XmlDom>() {
+
+                @Override
+                public void callback(String url, XmlDom data, AjaxStatus status) {
+                    Log.d("loginCallback", data + ": " + status.getCode());
+                    if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
+                        uploadImage();
+                    }
+                    if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
+                        Intent intent = new Intent(Helper.FILTER);
+                        intent.putExtra("sms", "login");
+                        Log.d("mMessageReceiver", "Send");
+                        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+                    }
+                }
+            };
+            String username = mSPrSupport.getString("username", getActivity());
+            String password = mSPrSupport.getString("password", getActivity());
+            String url = MyUrl.login + "code=" + username + "&password=" + password;
+            Log.d("loginCallback", url);
+            aQuery.progress(R.id.progress).ajax(url, XmlDom.class, ajaxCallback);
+        }
+
+    }
+
 
     @Override
     public void onDestroy() {

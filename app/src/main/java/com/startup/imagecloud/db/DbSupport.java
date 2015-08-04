@@ -52,8 +52,14 @@ public class DbSupport {
         Log.d("imageIsExist", "" + imageIsUploaded);
         return imageIsUploaded;
     }
-    public static final  ArrayList<BaseObject> getImageToUpload(){
-        String querry="select * from "+TableDbObj.IMAGE+" where "+ ImageObj.UPLOADED+" = 'false'";
+    public static final  ArrayList<BaseObject> getImageToUpload(String userId){
+        String querry="select * from "+TableDbObj.IMAGE+" where "+ ImageObj.UPLOADED+" = 'false' and "+ImageObj.USER+" = '"+userId+ "'";
+
+        ArrayList<BaseObject> data = MyDb.rawQuery(querry);
+        return data;
+    }
+    public static final  ArrayList<BaseObject> getImageById(String userId){
+        String querry="select * from "+TableDbObj.IMAGE+" where "+ImageObj.USER+" = '"+userId+ "'";
 
         ArrayList<BaseObject> data = MyDb.rawQuery(querry);
         return data;

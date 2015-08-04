@@ -31,6 +31,7 @@ import com.startup.imagecloud.db.MyDb;
 import com.startup.imagecloud.db.TableDbObj;
 import com.startup.imagecloud.service.SyncService;
 import com.telpoo.frame.object.BaseObject;
+import com.telpoo.frame.utils.SPRSupport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class LibraryFragment extends MyFragment {
         layoutMenu = (LinearLayout) view.findViewById(R.id.menu_bottom);
         imgDelete = (ImageView) view.findViewById(R.id.img_delete);
         imgSync = (ImageView) view.findViewById(R.id.img_sync);
-        images = MyDb.getAllOfTable(TableDbObj.IMAGE);
+        images = DbSupport.getImageById(SPRSupport.getString("username",getActivity()));
         adapter = new ImageLibraryAdapter(getActivity(), images);
         gridView.setAdapter(adapter);
         adapter.notifyDataSetChanged();

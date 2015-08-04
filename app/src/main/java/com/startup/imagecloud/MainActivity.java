@@ -54,6 +54,7 @@ import com.startup.imagecloud.service.SyncService;
 import com.telpoo.frame.utils.SPRSupport;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
 
 import static android.view.Gravity.START;
@@ -177,7 +178,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void checkLogin() {
-        if (mSPrSupport.isNull("username", this)) {
+        if (!mSPrSupport.getBool("isLogin",this)) {
             showDialogLogin();
         }
     }
@@ -189,10 +190,8 @@ public class MainActivity extends FragmentActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                        mSPrSupport.save("username", "", getApplicationContext());
-                        mSPrSupport.save("password", "", getApplicationContext());
-                        mSPrSupport.save("employeeId", "", getApplicationContext());
-                        finish();
+                        logout();
+
                     }
                 });
         builder.setNegativeButton(R.string.cancel,
@@ -205,10 +204,19 @@ public class MainActivity extends FragmentActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+    public void logout(){
+        mSPrSupport.save("username", "", getApplicationContext());
+        mSPrSupport.save("password", "", getApplicationContext());
+        mSPrSupport.save("employeeId", "", getApplicationContext());
+        mSPrSupport.save("name", "", getApplicationContext());
+        mSPrSupport.save("isLogin", false, getApplicationContext());
+        drawer.closeDrawers();
+        showDialogLogin();
+    }
 
     public void showDialogLogin() {
-        if (dialog == null) {
-            dialog = new Dialog(this);
+        dialog = new Dialog(this);
+
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.login_dialog);
             dialog.setCancelable(false);
@@ -240,7 +248,6 @@ public class MainActivity extends FragmentActivity {
                     return false;
                 }
             });
-        }
         dialog.show();
     }
 
@@ -262,8 +269,14 @@ public class MainActivity extends FragmentActivity {
         }
         if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
             Toast.makeText(this, getString(R.string.login_true), Toast.LENGTH_SHORT).show();
+            Calendar cal = Calendar.getInstance();
+            long curTime = cal.getTimeInMillis();
+
             mSPrSupport.save("employeeId", data.text("employeeId"), getApplication());
             mSPrSupport.save("name", data.text("name"), getApplication());
+            mSPrSupport.save("isLogin", true, getApplicationContext());
+            mSPrSupport.save("lastLogin", curTime, getApplicationContext());
+
             updateUserInfo();
             dialog.dismiss();
         }
@@ -308,6 +321,9 @@ public class MainActivity extends FragmentActivity {
 //            Log.d("mMessageReceiver", sms);
             if (sms.equals("start")) aQuery.id(R.id.progress).visibility(View.VISIBLE);
             if (sms.equals("end")) aQuery.id(R.id.progress).visibility(View.GONE);
+            if(sms.equals("login")){
+                logout();
+            }
         }
     };
 

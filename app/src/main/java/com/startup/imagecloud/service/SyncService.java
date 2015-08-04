@@ -60,9 +60,11 @@ public class SyncService extends IntentService {
     String TAG = "SyncService";
     SPRSupport mSPrSupport;
     Boolean isUpload = false;
+    Intent intent;
     int index = 0;
     int countDone = 0;
     ImageView imagePreview;
+    Handler handler;
 
     public SyncService() {
         super("ImageCloudSyncService");
@@ -112,9 +114,10 @@ public class SyncService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        this.intent = intent;
         aQuery = new AQuery(getApplicationContext());
         mSPrSupport = new SPRSupport();
-        Handler handler = new Handler(Looper.getMainLooper());
+        handler = new Handler(Looper.getMainLooper());
         if (isStartService) {
             handler.post(new Runnable() {
 
@@ -124,41 +127,45 @@ public class SyncService extends IntentService {
                 }
             });
         } else {
-            boolean checkUpload = false;
-            images = intent.getParcelableArrayListExtra("images");
-            if (images == null) {
-                images = DbSupport.getImageToUpload();
+            checkLogin();
+        }
+    }
+
+    public void startUpload() {
+        boolean checkUpload = false;
+        images = intent.getParcelableArrayListExtra("images");
+        if (images == null) {
+            images = DbSupport.getImageToUpload(SPRSupport.getString("username", getApplicationContext()));
+        }
+        for (int i = 0; i < images.size(); i++) {
+            if (!DbSupport.imageIsUploaded(images.get(i).get(ImageObj.ID))) {
+                checkUpload = true;
+                break;
             }
-            for (int i = 0; i < images.size(); i++) {
-                if (!DbSupport.imageIsUploaded(images.get(i).get(ImageObj.ID))) {
-                    checkUpload = true;
-                    break;
+        }
+        if (images.size() > 0 && checkUpload) {
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.start_sync), Toast.LENGTH_SHORT).show();
                 }
-            }
-            if (images.size() > 0 && checkUpload) {
-                handler.post(new Runnable() {
+            });
+            isStartService = true;
+            imagePreview = new ImageView(getApplicationContext());
+            sendUpdateMessage("start");
+            upload();
 
-                    @Override
-                    public void run() {
-                        Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.start_sync), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                isStartService = true;
-                imagePreview = new ImageView(getApplicationContext());
-                sendUpdateMessage("start");
-                upload();
+        } else {
 
-            } else {
+            handler.post(new Runnable() {
 
-                handler.post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.upload_empty), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                sendUpdateMessage("end");
-            }
+                @Override
+                public void run() {
+                    Toast.makeText(SyncService.this.getApplicationContext(), getString(R.string.upload_empty), Toast.LENGTH_SHORT).show();
+                }
+            });
+            sendUpdateMessage("end");
         }
     }
 
@@ -260,5 +267,33 @@ public class SyncService extends IntentService {
         Log.d("mMessageReceiver", "Send");
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
+
+    public void checkLogin() {
+        Calendar cal = Calendar.getInstance();
+        long curTime = cal.getTimeInMillis();
+        if (curTime - mSPrSupport.getLong("lastLogin", getApplicationContext()) < 2400000) {
+            startUpload();
+        } else {
+            AjaxCallback<XmlDom> ajaxCallback = new AjaxCallback<XmlDom>() {
+
+                @Override
+                public void callback(String url, XmlDom data, AjaxStatus status) {
+                    Log.d("loginCallback", data + ": " + status.getCode());
+                    if (status.getCode() == 200 && !data.text("employeeId").equals("0")) {
+                        startUpload();
+                    }
+                    if (status.getCode() == 200 && data.text("employeeId").equals("0")) {
+                        sendUpdateMessage("login");
+                    }
+                }
+            };
+            String username = mSPrSupport.getString("username", this);
+            String password = mSPrSupport.getString("password", this);
+            String url = MyUrl.login + "code=" + username + "&password=" + password;
+            Log.d("loginCallback", url);
+            aQuery.progress(R.id.progress).ajax(url, XmlDom.class, ajaxCallback);
+        }
+    }
+
 
 }
