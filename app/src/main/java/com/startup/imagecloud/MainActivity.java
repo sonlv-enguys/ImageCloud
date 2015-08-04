@@ -177,8 +177,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void checkLogin() {
-        String username = mSPrSupport.getString("username", this);
-        if (username.equals("")) {
+        if (mSPrSupport.isNull("username", this)) {
             showDialogLogin();
         }
     }

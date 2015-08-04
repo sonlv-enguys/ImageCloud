@@ -128,6 +128,7 @@ public class LibraryFragment extends MyFragment {
 
     public void resetImage() {
         countSelect = 0;
+        menuRightCheck=false;
         layoutMenu.setVisibility(View.GONE);
         for (int i = 0; i < images.size(); i++) {
             images.get(i).set(ImageObj.SELECTED, false);
